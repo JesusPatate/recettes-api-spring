@@ -2,12 +2,11 @@ package fr.ggautier.recettes.spi;
 
 import fr.ggautier.recettes.domain.Recipe;
 import org.assertj.core.api.SoftAssertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
 
 import java.util.Arrays;
 import java.util.List;
@@ -19,23 +18,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 class DatabaseRecipeRepositoryTest {
 
-    @TestConfiguration
-    static class TestConfig {
-
-        @Autowired
-        private RecipeDAO dao;
-
-        @Bean
-        public DatabaseRecipeRepository repository() {
-            return new DatabaseRecipeRepository(this.dao);
-        }
-    }
-
-    @Autowired
     private DatabaseRecipeRepository repository;
 
     @Autowired
+    private RecipeDAO dao;
+
+    @Autowired
     private TestEntityManager entityManager;
+
+    @BeforeEach
+    void setUp() {
+        this.repository = new DatabaseRecipeRepository(this.dao);
+    }
 
     @Test
     void testGetAll() {
