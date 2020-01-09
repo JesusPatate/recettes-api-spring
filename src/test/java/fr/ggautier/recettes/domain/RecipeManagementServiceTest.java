@@ -4,10 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -66,5 +63,19 @@ class RecipeManagementServiceTest {
 
         // Then
         verify(this.repository).save(recipe);
+    }
+
+    @Test
+    void testDelete() {
+        // Given
+        final Recipe recipe = new Recipe(UUID.randomUUID(), "recipe1");
+
+        given(this.repository.find(recipe.getId())).willReturn(Optional.of(recipe));
+
+        // When
+        this.service.delete(recipe.getId());
+
+        // Then
+        verify(this.repository).delete(recipe);
     }
 }

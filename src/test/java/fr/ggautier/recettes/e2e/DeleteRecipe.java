@@ -1,7 +1,5 @@
 package fr.ggautier.recettes.e2e;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import fr.ggautier.recettes.api.JsonRecipe;
 import fr.ggautier.recettes.spi.RecipeDbModel;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +7,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEnti
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -21,11 +18,11 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
@@ -33,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @AutoConfigureTestEntityManager
 @Transactional
-class StoreRecipe {
+class DeleteRecipe {
 
     @Autowired
     private MockMvc mvc;
@@ -42,26 +39,26 @@ class StoreRecipe {
     private TestEntityManager entityManager;
 
     @Test
-    void testStore() throws Exception {
+    void testDelete() throws Exception {
         // Given
-        final JsonRecipe recipe = new JsonRecipe(UUID.randomUUID(), "recipe1");
-        final String json = new ObjectMapper().writeValueAsString(recipe);
+        final RecipeDbModel recipe1 = new RecipeDbModel(UUID.randomUUID(), "recipe1");
+        final RecipeDbModel recipe2 = new RecipeDbModel(UUID.randomUUID(), "recipe2");
+        this.storeRecipes(recipe1, recipe2);
 
         // When
-        final ResultActions actions = mvc.perform(
-            MockMvcRequestBuilders.put("/recipes/{id}", recipe.getId())
-                .content(json)
-                .contentType(MediaType.APPLICATION_JSON));
+        final ResultActions actions = mvc.perform(MockMvcRequestBuilders.delete("/recipes/{id}", recipe1.getId()));
 
         // Then
-        actions.andExpect(MockMvcResultMatchers.status().isOk())
-            .andExpect(jsonPath("$.id").value(recipe.getId().toString()))
-            .andExpect(jsonPath("$.title").value(recipe.getTitle()));
+        actions.andExpect(MockMvcResultMatchers.status().isOk());
 
         final List<RecipeDbModel> recipes = this.getAllRecipes();
-        final RecipeDbModel expected = new RecipeDbModel(recipe.getId(), recipe.getTitle());
 
-        assertThat(recipes).containsExactly(expected);
+        assertThat(recipes).containsExactly(recipe2);
+    }
+
+    private void storeRecipes(final RecipeDbModel... recipes) {
+        Arrays.stream(recipes).forEach(this.entityManager::persist);
+        this.entityManager.flush();
     }
 
     private List<RecipeDbModel> getAllRecipes() {

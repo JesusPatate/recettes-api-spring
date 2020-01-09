@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,7 +37,7 @@ class DatabaseRecipeRepositoryTest {
     private TestEntityManager entityManager;
 
     @Test
-    void getAll() {
+    void testGetAll() {
         // Given
         final RecipeDbModel recipe1 = new RecipeDbModel(UUID.randomUUID(), "recipe1");
         final RecipeDbModel recipe2 = new RecipeDbModel(UUID.randomUUID(), "recipe2");
@@ -56,7 +57,23 @@ class DatabaseRecipeRepositoryTest {
     }
 
     @Test
-    void save() {
+    void testFind() {
+        // Given
+        final RecipeDbModel recipe = new RecipeDbModel(UUID.randomUUID(), "recipe1");
+        this.entityManager.persist(recipe);
+        this.entityManager.flush();
+
+        // When
+        final Optional<Recipe> result = this.repository.find(recipe.getId());
+
+        // Then
+        final Recipe expected = new Recipe(recipe.getId(), recipe.getTitle());
+
+        assertThat(result).contains(expected);
+    }
+
+    @Test
+    void testSave() {
         // Given
         final Recipe recipe = new Recipe(UUID.randomUUID(), "recipe1");
 
@@ -72,5 +89,28 @@ class DatabaseRecipeRepositoryTest {
             softly.assertThat(dbModel.getId()).isEqualTo(recipe.getId());
             softly.assertThat(dbModel.getTitle()).isEqualTo(recipe.getTitle());
         });
+    }
+
+    @Test
+    void testDelete() {
+        // Given
+        final RecipeDbModel recipe1 = new RecipeDbModel(UUID.randomUUID(), "recipe1");
+        final RecipeDbModel recipe2 = new RecipeDbModel(UUID.randomUUID(), "recipe2");
+        this.entityManager.persist(recipe1);
+        this.entityManager.persist(recipe2);
+        this.entityManager.flush();
+
+        // When
+        final Recipe recipe = new Recipe(recipe1.getId(), recipe1.getTitle());
+        this.repository.delete(recipe);
+
+        // Then
+        final RecipeDbModel dbModel1 = this.entityManager.find(RecipeDbModel.class, recipe1.getId());
+
+        assertThat(dbModel1).isNull();
+
+        final RecipeDbModel dbModel2 = this.entityManager.find(RecipeDbModel.class, recipe2.getId());
+
+        assertThat(dbModel2).isEqualTo(recipe2);
     }
 }

@@ -15,6 +15,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
 class RecipeControllerTest {
 
@@ -64,7 +65,7 @@ class RecipeControllerTest {
     }
 
     @Test
-    void testStore() {
+    void testStore() throws Exception {
         // Given
         final UUID id = UUID.randomUUID();
         final JsonRecipe json = new JsonRecipe(id, "recipe1");
@@ -89,5 +90,17 @@ class RecipeControllerTest {
         assertThat(throwable).isNotNull();
         assertThat(throwable).isInstanceOf(NotMatchingIdentifiersException.class);
         assertThat(throwable).hasMessage(NotMatchingIdentifiersException.MESSAGE);
+    }
+
+    @Test
+    void testDelete() throws Exception {
+        // Given
+        final JsonRecipe recipe = new JsonRecipe(UUID.randomUUID(), "recipe1");
+
+        // When
+        this.controller.delete(recipe.getId());
+
+        // Then
+        verify(this.service).delete(recipe.getId());
     }
 }

@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Component
 @Adapter
@@ -33,9 +35,21 @@ public class DatabaseRecipeRepository implements Recipes {
     }
 
     @Override
+    public Optional<Recipe> find(final UUID id) {
+        return this.dao.findById(id)
+            .map(this::fromDbModel);
+    }
+
+    @Override
     public void save(final Recipe recipe) {
         final RecipeDbModel dbModel = this.toDbModel(recipe);
         this.dao.save(dbModel);
+    }
+
+    @Override
+    public void delete(final Recipe recipe) {
+        final RecipeDbModel dbModel = this.toDbModel(recipe);
+        this.dao.delete(dbModel);
     }
 
     /**
