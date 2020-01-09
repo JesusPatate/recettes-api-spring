@@ -8,25 +8,24 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Objects;
-import java.util.UUID;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "recipe")
-public class RecipeDbModel {
+@Table(name = "unit")
+public class UnitDbModel {
 
     /**
-     * Recipe's identifier.
+     * Unit's identifier.
      */
     @Id
-    private UUID id;
+    Long id;
 
     /**
-     * Recipe's title.
+     * Unit's name.
      */
-    private String title;
+    String name;
 
     @Override
     public boolean equals(final Object object) {
@@ -38,13 +37,13 @@ public class RecipeDbModel {
             return false;
         }
 
-        final RecipeDbModel other = (RecipeDbModel) object;
+        final UnitDbModel other = (UnitDbModel) object;
 
-        return id.equals(other.id) && title.equals(other.title);
+        return id.equals(other.id) && name.equals(other.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title);
+        return Objects.hash(id, name);
     }
 }

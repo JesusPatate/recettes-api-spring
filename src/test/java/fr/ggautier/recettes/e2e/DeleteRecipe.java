@@ -43,7 +43,7 @@ class DeleteRecipe {
         // Given
         final RecipeDbModel recipe1 = new RecipeDbModel(UUID.randomUUID(), "recipe1");
         final RecipeDbModel recipe2 = new RecipeDbModel(UUID.randomUUID(), "recipe2");
-        this.storeRecipes(recipe1, recipe2);
+        this.store(recipe1, recipe2);
 
         // When
         final ResultActions actions = mvc.perform(MockMvcRequestBuilders.delete("/recipes/{id}", recipe1.getId()));
@@ -56,7 +56,7 @@ class DeleteRecipe {
         assertThat(recipes).containsExactly(recipe2);
     }
 
-    private void storeRecipes(final RecipeDbModel... recipes) {
+    private void store(final RecipeDbModel... recipes) {
         Arrays.stream(recipes).forEach(this.entityManager::persist);
         this.entityManager.flush();
     }

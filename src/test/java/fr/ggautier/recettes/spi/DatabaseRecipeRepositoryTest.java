@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -22,7 +23,7 @@ class DatabaseRecipeRepositoryTest {
     static class TestConfig {
 
         @Autowired
-        private ZoneDAO dao;
+        private RecipeDAO dao;
 
         @Bean
         public DatabaseRecipeRepository repository() {
@@ -41,9 +42,7 @@ class DatabaseRecipeRepositoryTest {
         // Given
         final RecipeDbModel recipe1 = new RecipeDbModel(UUID.randomUUID(), "recipe1");
         final RecipeDbModel recipe2 = new RecipeDbModel(UUID.randomUUID(), "recipe2");
-        this.entityManager.persist(recipe1);
-        this.entityManager.persist(recipe2);
-        this.entityManager.flush();
+        this.store(recipe1, recipe2);
 
         // When
         final List<Recipe> result = this.repository.getAll();
@@ -112,5 +111,10 @@ class DatabaseRecipeRepositoryTest {
         final RecipeDbModel dbModel2 = this.entityManager.find(RecipeDbModel.class, recipe2.getId());
 
         assertThat(dbModel2).isEqualTo(recipe2);
+    }
+
+    private void store(final RecipeDbModel... recipes) {
+        Arrays.stream(recipes).forEach(this.entityManager::persist);
+        this.entityManager.flush();
     }
 }

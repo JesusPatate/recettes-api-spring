@@ -1,6 +1,6 @@
 package fr.ggautier.recettes.e2e;
 
-import fr.ggautier.recettes.spi.RecipeDbModel;
+import fr.ggautier.recettes.spi.UnitDbModel;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
@@ -14,7 +14,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
-import java.util.UUID;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
@@ -24,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @AutoConfigureTestEntityManager
 @Transactional
-class GetAllRecipes {
+class GetAllUnits {
 
     @Autowired
     private MockMvc mvc;
@@ -35,22 +34,22 @@ class GetAllRecipes {
     @Test
     void testGetAll() throws Exception {
         // Given
-        final RecipeDbModel recipe1 = new RecipeDbModel(UUID.randomUUID(), "recipe1");
-        final RecipeDbModel recipe2 = new RecipeDbModel(UUID.randomUUID(), "recipe2");
-        this.store(recipe1, recipe2);
+        final UnitDbModel unit1 = new UnitDbModel(1L, "unit1");
+        final UnitDbModel unit2 = new UnitDbModel(2L, "unit2");
+        this.store(unit1, unit2);
 
         // When
-        final ResultActions actions = this.mvc.perform(MockMvcRequestBuilders.get("/recipes"));
+        final ResultActions actions = this.mvc.perform(MockMvcRequestBuilders.get("/units"));
 
         // Then
         actions.andExpect(MockMvcResultMatchers.status().isOk())
-            .andExpect(jsonPath("$[0].id").value(recipe1.getId().toString()))
-            .andExpect(jsonPath("$[0].title").value(recipe1.getTitle()))
-            .andExpect(jsonPath("$[1].id").value(recipe2.getId().toString()))
-            .andExpect(jsonPath("$[1].title").value(recipe2.getTitle()));
+            .andExpect(jsonPath("$[0].id").value(unit1.getId()))
+            .andExpect(jsonPath("$[0].name").value(unit1.getName()))
+            .andExpect(jsonPath("$[1].id").value(unit2.getId()))
+            .andExpect(jsonPath("$[1].name").value(unit2.getName()));
     }
 
-    private void store(final RecipeDbModel... recipes) {
+    private void store(final UnitDbModel... recipes) {
         Arrays.stream(recipes).forEach(this.entityManager::persist);
         this.entityManager.flush();
     }

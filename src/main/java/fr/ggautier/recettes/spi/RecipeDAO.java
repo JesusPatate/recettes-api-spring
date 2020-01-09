@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-public interface ZoneDAO extends CrudRepository<RecipeDbModel, UUID> {
+public interface RecipeDAO extends CrudRepository<RecipeDbModel, UUID> {
 
 }

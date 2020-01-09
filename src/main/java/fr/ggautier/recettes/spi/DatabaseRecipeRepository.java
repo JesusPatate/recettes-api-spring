@@ -4,21 +4,21 @@ import fr.ggautier.arch.annotations.Adapter;
 import fr.ggautier.recettes.domain.Recipe;
 import fr.ggautier.recettes.domain.Recipes;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@Component
+@Repository
 @Adapter
 public class DatabaseRecipeRepository implements Recipes {
 
-    private final ZoneDAO dao;
+    private final RecipeDAO dao;
 
     @Autowired
-    public DatabaseRecipeRepository(final ZoneDAO dao) {
+    public DatabaseRecipeRepository(final RecipeDAO dao) {
         this.dao = dao;
     }
 
