@@ -3,6 +3,7 @@ package fr.ggautier.recettes.e2e;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.ggautier.recettes.api.JsonRecipe;
 import fr.ggautier.recettes.spi.RecipeDbModel;
+import fr.ggautier.recettes.utils.JsonRecipeBuilder;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
@@ -44,7 +45,7 @@ class StoreRecipe {
     @Test
     void testStore() throws Exception {
         // Given
-        final JsonRecipe recipe = new JsonRecipe(UUID.randomUUID(), "recipe1");
+        final JsonRecipe recipe = this.buildRecipe(UUID.randomUUID());
         final String json = new ObjectMapper().writeValueAsString(recipe);
 
         // When
@@ -72,5 +73,13 @@ class StoreRecipe {
         final CriteriaQuery<RecipeDbModel> all = criteria.select(root);
         TypedQuery<RecipeDbModel> allQuery = entityManager.createQuery(all);
         return allQuery.getResultList();
+    }
+
+    private JsonRecipe buildRecipe(final UUID id) {
+        return new JsonRecipeBuilder()
+            .setId(id)
+            .setTitle("recipe1")
+            .addIngredient("ingredient1")
+            .build();
     }
 }

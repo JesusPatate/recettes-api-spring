@@ -7,6 +7,7 @@ import fr.ggautier.recettes.domain.RecipeManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -32,7 +33,7 @@ public class RecipeController {
     }
 
     @PutMapping("/{id}")
-    public Recipe store(@PathVariable("id") final UUID id, @RequestBody final JsonRecipe json)
+    public Recipe store(@PathVariable("id") final UUID id, @RequestBody @Valid final JsonRecipe json)
         throws NotMatchingIdentifiersException {
 
         if (!id.equals(json.getId())) {

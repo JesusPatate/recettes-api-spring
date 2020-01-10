@@ -2,6 +2,7 @@ package fr.ggautier.recettes.api;
 
 import fr.ggautier.recettes.domain.Recipe;
 import fr.ggautier.recettes.domain.RecipeManagementService;
+import fr.ggautier.recettes.utils.JsonRecipeBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -68,7 +69,7 @@ class RecipeControllerTest {
     void testStore() throws Exception {
         // Given
         final UUID id = UUID.randomUUID();
-        final JsonRecipe json = new JsonRecipe(id, "recipe1");
+        final JsonRecipe json = this.buildJson(id);
 
         // When
         final Recipe output = this.controller.store(id, json);
@@ -81,7 +82,7 @@ class RecipeControllerTest {
     @Test
     void testStoreNotMatchingIds() {
         // Given
-        final JsonRecipe json = new JsonRecipe(UUID.randomUUID(), "recipe1");
+        final JsonRecipe json = this.buildJson(UUID.randomUUID());
 
         // When
         final Throwable throwable = catchThrowable(() -> this.controller.store(UUID.randomUUID(), json));
@@ -95,12 +96,20 @@ class RecipeControllerTest {
     @Test
     void testDelete() throws Exception {
         // Given
-        final JsonRecipe recipe = new JsonRecipe(UUID.randomUUID(), "recipe1");
+        final JsonRecipe json = buildJson(UUID.randomUUID());
 
         // When
-        this.controller.delete(recipe.getId());
+        this.controller.delete(json.getId());
 
         // Then
-        verify(this.service).delete(recipe.getId());
+        verify(this.service).delete(json.getId());
+    }
+
+    private JsonRecipe buildJson(final UUID id) {
+        return new JsonRecipeBuilder()
+            .setId(id)
+            .setTitle("recipe1")
+            .addIngredient("ingredient1")
+            .build();
     }
 }
