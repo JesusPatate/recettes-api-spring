@@ -40,11 +40,11 @@ public class RecipeDbModel {
 
         final RecipeDbModel other = (RecipeDbModel) object;
 
-        return id.equals(other.id) && title.equals(other.title);
+        return id.equals(other.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title);
+        return Objects.hash(id);
     }
 }

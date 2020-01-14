@@ -5,13 +5,15 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @EqualsAndHashCode
 public class Unit {
 
-    private final Long id;
+    private final UUID id;
 
     private String name;
 }

@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.UUID;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
@@ -34,8 +35,8 @@ class GetAllUnits {
     @Test
     void testGetAll() throws Exception {
         // Given
-        final UnitDbModel unit1 = new UnitDbModel(1L, "unit1");
-        final UnitDbModel unit2 = new UnitDbModel(2L, "unit2");
+        final UnitDbModel unit1 = new UnitDbModel(UUID.randomUUID(), "unit1");
+        final UnitDbModel unit2 = new UnitDbModel(UUID.randomUUID(), "unit2");
         this.store(unit1, unit2);
 
         // When
@@ -43,9 +44,9 @@ class GetAllUnits {
 
         // Then
         actions.andExpect(MockMvcResultMatchers.status().isOk())
-            .andExpect(jsonPath("$[0].id").value(unit1.getId()))
+            .andExpect(jsonPath("$[0].id").value(unit1.getId().toString()))
             .andExpect(jsonPath("$[0].name").value(unit1.getName()))
-            .andExpect(jsonPath("$[1].id").value(unit2.getId()))
+            .andExpect(jsonPath("$[1].id").value(unit2.getId().toString()))
             .andExpect(jsonPath("$[1].name").value(unit2.getName()));
     }
 

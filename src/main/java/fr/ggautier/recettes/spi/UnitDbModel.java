@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Objects;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -20,7 +21,7 @@ public class UnitDbModel {
      * Unit's identifier.
      */
     @Id
-    Long id;
+    UUID id;
 
     /**
      * Unit's name.
@@ -39,11 +40,11 @@ public class UnitDbModel {
 
         final UnitDbModel other = (UnitDbModel) object;
 
-        return id.equals(other.id) && name.equals(other.name);
+        return id.equals(other.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name);
+        return Objects.hash(id);
     }
 }

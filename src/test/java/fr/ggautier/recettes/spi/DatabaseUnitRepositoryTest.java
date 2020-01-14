@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,8 +43,8 @@ class DatabaseUnitRepositoryTest {
     @Test
     void getAll() {
         // Given
-        final UnitDbModel unit1 = new UnitDbModel(1L, "unit1");
-        final UnitDbModel unit2 = new UnitDbModel(2L, "unit2");
+        final UnitDbModel unit1 = new UnitDbModel(UUID.randomUUID(), "unit1");
+        final UnitDbModel unit2 = new UnitDbModel(UUID.randomUUID(), "unit2");
         this.store(unit1, unit2);
 
         // When

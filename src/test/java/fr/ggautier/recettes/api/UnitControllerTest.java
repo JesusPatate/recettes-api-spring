@@ -10,6 +10,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -45,8 +46,8 @@ class UnitControllerTest {
     @Test
     void testGetAll() {
         // Given
-        final Unit unit1 = new Unit(1L, "unit1");
-        final Unit unit2 = new Unit(2L, "unit2");
+        final Unit unit1 = new Unit(UUID.randomUUID(), "unit1");
+        final Unit unit2 = new Unit(UUID.randomUUID(), "unit2");
 
         final List<Unit> units = new ArrayList<>();
         units.add(unit1);
