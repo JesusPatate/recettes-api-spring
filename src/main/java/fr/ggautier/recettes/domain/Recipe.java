@@ -12,9 +12,10 @@ import java.util.UUID;
 @Getter
 @Setter
 @AllArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Recipe {
 
+    @EqualsAndHashCode.Include
     private final UUID id;
 
     private String title;

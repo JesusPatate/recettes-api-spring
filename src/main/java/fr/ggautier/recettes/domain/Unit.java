@@ -10,9 +10,10 @@ import java.util.UUID;
 @Getter
 @Setter
 @AllArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Unit {
 
+    @EqualsAndHashCode.Include
     private final UUID id;
 
     private String name;
