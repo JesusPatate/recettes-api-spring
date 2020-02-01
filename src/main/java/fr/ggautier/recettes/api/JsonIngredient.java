@@ -8,6 +8,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 @Representation
 public class JsonIngredient {
@@ -19,14 +20,13 @@ public class JsonIngredient {
     @JsonProperty
     private final Integer amount;
 
-    @Min(1)
     @JsonProperty("unit")
-    private final Integer unitId;
+    private final UUID unitId;
 
     public JsonIngredient(
         @JsonProperty("name") final String name,
         @JsonProperty("amount") final Integer amount,
-        @JsonProperty("unit") final Integer unitId
+        @JsonProperty("unit") final UUID unitId
     ) {
         this.name = name;
         this.amount = amount;
@@ -43,7 +43,7 @@ public class JsonIngredient {
     }
 
     @JsonIgnore
-    public Optional<Integer> getUnitId() {
+    public Optional<UUID> getUnitId() {
         return Optional.ofNullable(unitId);
     }
 

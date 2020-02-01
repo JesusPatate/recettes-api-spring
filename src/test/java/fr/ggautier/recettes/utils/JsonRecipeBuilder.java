@@ -35,7 +35,7 @@ public class JsonRecipeBuilder {
         return this;
     }
 
-    JsonRecipeBuilder addIngredient(final String name, final int amount, final int unitId) {
+    JsonRecipeBuilder addIngredient(final String name, final int amount, final UUID unitId) {
         this.ingredients.add(new JsonIngredient(name, amount, unitId));
         return this;
     }
