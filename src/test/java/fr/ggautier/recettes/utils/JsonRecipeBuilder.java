@@ -25,18 +25,8 @@ public class JsonRecipeBuilder {
         return this;
     }
 
-    public JsonRecipeBuilder addIngredient(final String name) {
-        this.ingredients.add(new JsonIngredient(name, null, null));
-        return this;
-    }
-
-    public JsonRecipeBuilder addIngredient(final String name, final int amount) {
-        this.ingredients.add(new JsonIngredient(name, amount, null));
-        return this;
-    }
-
-    JsonRecipeBuilder addIngredient(final String name, final int amount, final UUID unitId) {
-        this.ingredients.add(new JsonIngredient(name, amount, unitId));
+    public JsonRecipeBuilder addIngredient(final JsonIngredient ingredient) {
+        this.ingredients.add(ingredient);
         return this;
     }
 

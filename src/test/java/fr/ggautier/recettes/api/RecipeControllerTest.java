@@ -69,7 +69,7 @@ class RecipeControllerTest {
     void testStore() throws Exception {
         // Given
         final UUID id = UUID.randomUUID();
-        final JsonRecipe json = this.buildJson(id);
+        final JsonRecipe json = this.buildJsonRecipe(id, "recipe1");
 
         // When
         final Recipe output = this.controller.store(id, json);
@@ -82,7 +82,7 @@ class RecipeControllerTest {
     @Test
     void testStoreNotMatchingIds() {
         // Given
-        final JsonRecipe json = this.buildJson(UUID.randomUUID());
+        final JsonRecipe json = this.buildJsonRecipe(UUID.randomUUID(), "recipe1");
 
         // When
         final Throwable throwable = catchThrowable(() -> this.controller.store(UUID.randomUUID(), json));
@@ -96,7 +96,7 @@ class RecipeControllerTest {
     @Test
     void testDelete() throws Exception {
         // Given
-        final JsonRecipe json = buildJson(UUID.randomUUID());
+        final JsonRecipe json = buildJsonRecipe(UUID.randomUUID(), "recipe1");
 
         // When
         this.controller.delete(json.getId());
@@ -105,11 +105,19 @@ class RecipeControllerTest {
         verify(this.service).delete(json.getId());
     }
 
-    private JsonRecipe buildJson(final UUID id) {
-        return new JsonRecipeBuilder()
+    private JsonRecipe buildJsonRecipe(
+        final UUID id,
+        final String title,
+        final JsonIngredient... ingredients
+    ) {
+        final JsonRecipeBuilder builder = new JsonRecipeBuilder()
             .setId(id)
-            .setTitle("recipe1")
-            .addIngredient("ingredient1")
-            .build();
+            .setTitle(title);
+
+        for (JsonIngredient ingredient : ingredients) {
+            builder.addIngredient(ingredient);
+        }
+
+        return builder.build();
     }
 }
