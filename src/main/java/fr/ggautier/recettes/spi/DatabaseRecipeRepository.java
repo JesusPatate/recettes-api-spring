@@ -35,19 +35,19 @@ public class DatabaseRecipeRepository implements Recipes {
     }
 
     @Override
-    public Optional<Recipe> find(final UUID id) {
+    public Optional<Recipe> get(final UUID id) {
         return this.dao.findById(id)
             .map(this::fromDbModel);
     }
 
     @Override
-    public void save(final Recipe recipe) {
+    public void add(final Recipe recipe) {
         final RecipeDbModel dbModel = this.toDbModel(recipe);
         this.dao.save(dbModel);
     }
 
     @Override
-    public void delete(final Recipe recipe) {
+    public void remove(final Recipe recipe) {
         final RecipeDbModel dbModel = this.toDbModel(recipe);
         this.dao.delete(dbModel);
     }

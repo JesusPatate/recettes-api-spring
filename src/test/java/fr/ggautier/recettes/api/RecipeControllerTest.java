@@ -1,7 +1,8 @@
 package fr.ggautier.recettes.api;
 
 import fr.ggautier.recettes.domain.Recipe;
-import fr.ggautier.recettes.domain.RecipeManagementService;
+import fr.ggautier.recettes.domain.RecipeManager;
+import fr.ggautier.recettes.utils.IntegrationTest;
 import fr.ggautier.recettes.utils.JsonRecipeBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,17 +19,17 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
-class RecipeControllerTest {
+class RecipeControllerTest implements IntegrationTest {
 
     private RecipeController controller;
 
     @Mock
-    private RecipeManagementService service;
+    private RecipeManager manager;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        this.controller = new RecipeController(this.service);
+        this.controller = new RecipeController(this.manager);
     }
 
     /**
@@ -37,7 +38,7 @@ class RecipeControllerTest {
     @Test
     void testGetAllNoRecipe() {
         // Given
-        given(this.service.getAll()).willReturn(Collections.emptyList());
+        given(this.manager.getAll()).willReturn(Collections.emptyList());
 
         // When
         final List<Recipe> recipes = this.controller.getAll();
@@ -56,7 +57,7 @@ class RecipeControllerTest {
         recipes.add(recipe1);
         recipes.add(recipe2);
 
-        given(this.service.getAll()).willReturn(recipes);
+        given(this.manager.getAll()).willReturn(recipes);
 
         // When
         final List<Recipe> output = this.controller.getAll();
@@ -102,7 +103,7 @@ class RecipeControllerTest {
         this.controller.delete(json.getId());
 
         // Then
-        verify(this.service).delete(json.getId());
+        verify(this.manager).delete(json.getId());
     }
 
     private JsonRecipe buildJsonRecipe(

@@ -1,5 +1,6 @@
 package fr.ggautier.recettes.domain;
 
+import fr.ggautier.recettes.utils.UnitTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -13,9 +14,9 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
-class UnitManagementServiceTest {
+class UnitManagerTest implements UnitTest {
 
-    private UnitManagementService service;
+    private UnitManager service;
 
     @Mock
     private Units repository;
@@ -24,7 +25,7 @@ class UnitManagementServiceTest {
     void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        this.service = new UnitManagementService(this.repository);
+        this.service = new UnitManager(this.repository);
     }
 
     @Test

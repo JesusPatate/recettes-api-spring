@@ -11,9 +11,9 @@ public interface Recipes {
 
     List<Recipe> getAll();
 
-    Optional<Recipe> find(final UUID id);
+    Optional<Recipe> get(final UUID id);
 
-    void save(final Recipe recipe);
+    void add(final Recipe recipe);
 
-    void delete(final Recipe id);
+    void remove(final Recipe id);
 }

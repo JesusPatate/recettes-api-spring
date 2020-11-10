@@ -8,12 +8,12 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Service
-public class RecipeManagementService {
+public class RecipeManager {
 
     private final Recipes recipes;
 
     @Autowired
-    public RecipeManagementService(final Recipes recipes) {
+    public RecipeManager(final Recipes recipes) {
         this.recipes = recipes;
     }
 
@@ -22,7 +22,7 @@ public class RecipeManagementService {
     }
 
     public void store(final Recipe recipe) {
-        this.recipes.save(recipe);
+        this.recipes.add(recipe);
     }
 
     /**
@@ -32,9 +32,9 @@ public class RecipeManagementService {
      * @throws NoSuchElementException If the provided identifier does not match with any saved recipe
      */
     public void delete(final UUID id) {
-        final Recipe recipe = this.recipes.find(id)
+        final Recipe recipe = this.recipes.get(id)
             .orElseThrow(NoSuchElementException::new);
 
-        this.recipes.delete(recipe);
+        this.recipes.remove(recipe);
     }
 }

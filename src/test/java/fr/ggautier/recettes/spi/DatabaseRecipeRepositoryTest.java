@@ -1,6 +1,7 @@
 package fr.ggautier.recettes.spi;
 
 import fr.ggautier.recettes.domain.Recipe;
+import fr.ggautier.recettes.utils.IntegrationTest;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,7 +17,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-class DatabaseRecipeRepositoryTest {
+class DatabaseRecipeRepositoryTest implements IntegrationTest {
 
     private DatabaseRecipeRepository repository;
 
@@ -50,14 +51,13 @@ class DatabaseRecipeRepositoryTest {
     }
 
     @Test
-    void testFind() {
+    void testGet() {
         // Given
         final RecipeDbModel recipe = new RecipeDbModel(UUID.randomUUID(), "recipe1");
-        this.entityManager.persist(recipe);
-        this.entityManager.flush();
+        this.store(recipe);
 
         // When
-        final Optional<Recipe> result = this.repository.find(recipe.getId());
+        final Optional<Recipe> result = this.repository.get(recipe.getId());
 
         // Then
         final Recipe expected = new Recipe(recipe.getId(), recipe.getTitle());
@@ -66,12 +66,12 @@ class DatabaseRecipeRepositoryTest {
     }
 
     @Test
-    void testSave() {
+    void testAdd() {
         // Given
         final Recipe recipe = new Recipe(UUID.randomUUID(), "recipe1");
 
         // When
-        this.repository.save(recipe);
+        this.repository.add(recipe);
 
         // Then
         final RecipeDbModel dbModel = this.entityManager.find(RecipeDbModel.class, recipe.getId());
@@ -85,17 +85,15 @@ class DatabaseRecipeRepositoryTest {
     }
 
     @Test
-    void testDelete() {
+    void testRemove() {
         // Given
         final RecipeDbModel recipe1 = new RecipeDbModel(UUID.randomUUID(), "recipe1");
         final RecipeDbModel recipe2 = new RecipeDbModel(UUID.randomUUID(), "recipe2");
-        this.entityManager.persist(recipe1);
-        this.entityManager.persist(recipe2);
-        this.entityManager.flush();
+        this.store(recipe1, recipe2);
 
         // When
         final Recipe recipe = new Recipe(recipe1.getId(), recipe1.getTitle());
-        this.repository.delete(recipe);
+        this.repository.remove(recipe);
 
         // Then
         final RecipeDbModel dbModel1 = this.entityManager.find(RecipeDbModel.class, recipe1.getId());

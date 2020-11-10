@@ -6,12 +6,12 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class UnitManagementService {
+public class UnitManager {
 
     private final Units units;
 
     @Autowired
-    public UnitManagementService(final Units units) {
+    public UnitManager(final Units units) {
         this.units = units;
     }
 

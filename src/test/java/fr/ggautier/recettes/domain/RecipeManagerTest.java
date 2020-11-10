@@ -1,26 +1,31 @@
 package fr.ggautier.recettes.domain;
 
+import fr.ggautier.recettes.utils.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
-class RecipeManagementServiceTest {
+class RecipeManagerTest implements UnitTest {
 
-    private final RecipeManagementService service;
+    private final RecipeManager service;
 
     @Mock
     private Recipes repository;
 
-    RecipeManagementServiceTest() {
+    RecipeManagerTest() {
         MockitoAnnotations.initMocks(this);
 
-        this.service = new RecipeManagementService(this.repository);
+        this.service = new RecipeManager(this.repository);
     }
 
     @Test
@@ -62,7 +67,7 @@ class RecipeManagementServiceTest {
         this.service.store(recipe);
 
         // Then
-        verify(this.repository).save(recipe);
+        verify(this.repository).add(recipe);
     }
 
     @Test
@@ -70,12 +75,12 @@ class RecipeManagementServiceTest {
         // Given
         final Recipe recipe = new Recipe(UUID.randomUUID(), "recipe1");
 
-        given(this.repository.find(recipe.getId())).willReturn(Optional.of(recipe));
+        given(this.repository.get(recipe.getId())).willReturn(Optional.of(recipe));
 
         // When
         this.service.delete(recipe.getId());
 
         // Then
-        verify(this.repository).delete(recipe);
+        verify(this.repository).remove(recipe);
     }
 }

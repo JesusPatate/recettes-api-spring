@@ -3,7 +3,7 @@ package fr.ggautier.recettes.api;
 import fr.ggautier.arch.annotations.Adapter;
 import fr.ggautier.arch.annotations.rest.Resource;
 import fr.ggautier.recettes.domain.Unit;
-import fr.ggautier.recettes.domain.UnitManagementService;
+import fr.ggautier.recettes.domain.UnitManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,15 +19,15 @@ public class UnitController {
 
     static final String ROUTE = "/units";
 
-    private final UnitManagementService service;
+    private final UnitManager manager;
 
     @Autowired
-    public UnitController(final UnitManagementService service) {
-        this.service = service;
+    public UnitController(final UnitManager manager) {
+        this.manager = manager;
     }
 
     @GetMapping
     public List<Unit> getAll() {
-        return this.service.getAll();
+        return this.manager.getAll();
     }
 }

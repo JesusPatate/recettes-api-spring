@@ -1,7 +1,8 @@
 package fr.ggautier.recettes.api;
 
 import fr.ggautier.recettes.domain.Unit;
-import fr.ggautier.recettes.domain.UnitManagementService;
+import fr.ggautier.recettes.domain.UnitManager;
+import fr.ggautier.recettes.utils.IntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -15,17 +16,17 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
-class UnitControllerTest {
+class UnitControllerTest implements IntegrationTest {
 
     private UnitController controller;
 
     @Mock
-    private UnitManagementService service;
+    private UnitManager manager;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        this.controller = new UnitController(service);
+        this.controller = new UnitController(manager);
     }
 
     /**
@@ -34,7 +35,7 @@ class UnitControllerTest {
     @Test
     void testGetAllNoUnit() {
         // Given
-        given(this.service.getAll()).willReturn(Collections.emptyList());
+        given(this.manager.getAll()).willReturn(Collections.emptyList());
 
         // When
         final List<Unit> units = this.controller.getAll();
@@ -53,7 +54,7 @@ class UnitControllerTest {
         units.add(unit1);
         units.add(unit2);
 
-        given(this.service.getAll()).willReturn(units);
+        given(this.manager.getAll()).willReturn(units);
 
         // When
         final List<Unit> output = this.controller.getAll();

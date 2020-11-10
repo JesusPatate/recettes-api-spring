@@ -3,9 +3,15 @@ package fr.ggautier.recettes.api;
 import fr.ggautier.arch.annotations.Adapter;
 import fr.ggautier.arch.annotations.rest.Resource;
 import fr.ggautier.recettes.domain.Recipe;
-import fr.ggautier.recettes.domain.RecipeManagementService;
+import fr.ggautier.recettes.domain.RecipeManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -20,16 +26,16 @@ public class RecipeController {
 
     static final String ROUTE = "/recipes";
 
-    private final RecipeManagementService service;
+    private final RecipeManager manager;
 
     @Autowired
-    public RecipeController(final RecipeManagementService service) {
-        this.service = service;
+    public RecipeController(final RecipeManager manager) {
+        this.manager = manager;
     }
 
     @GetMapping
     public List<Recipe> getAll() {
-        return this.service.getAll();
+        return this.manager.getAll();
     }
 
     @PutMapping("/{id}")
@@ -41,14 +47,14 @@ public class RecipeController {
         }
 
         final Recipe recipe = new Recipe(id, json.getTitle());
-        this.service.store(recipe);
+        this.manager.store(recipe);
         return recipe;
     }
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable("id") final UUID id) throws RecipeNotFoundException {
         try {
-            this.service.delete(id);
+            this.manager.delete(id);
         } catch (final NoSuchElementException exception) {
             throw new RecipeNotFoundException();
         }
