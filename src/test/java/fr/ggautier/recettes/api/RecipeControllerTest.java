@@ -1,6 +1,7 @@
 package fr.ggautier.recettes.api;
 
 import fr.ggautier.recettes.domain.Recipe;
+import fr.ggautier.recettes.domain.RecipeFinder;
 import fr.ggautier.recettes.domain.RecipeManager;
 import fr.ggautier.recettes.utils.IntegrationTest;
 import fr.ggautier.recettes.utils.JsonRecipeBuilder;
@@ -26,10 +27,13 @@ class RecipeControllerTest implements IntegrationTest {
     @Mock
     private RecipeManager manager;
 
+    @Mock
+    private RecipeFinder finder;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        this.controller = new RecipeController(this.manager);
+        this.controller = new RecipeController(this.manager, this.finder);
     }
 
     /**
@@ -104,6 +108,39 @@ class RecipeControllerTest implements IntegrationTest {
 
         // Then
         verify(this.manager).delete(json.getId());
+    }
+
+    @Test
+    void testSearch() {
+        // Given
+        final Recipe recipe1 = new Recipe(UUID.fromString("cc83467c-8192-454f-90bb-7e88bfdd8214"), "recipe1");
+        final Recipe recipe2 = new Recipe(UUID.fromString("436c61f5-0e81-4194-8e09-13f2fa043c7e"), "recipe2");
+
+        final List<Recipe> recipes = new ArrayList<>();
+        recipes.add(recipe1);
+        recipes.add(recipe2);
+
+        final String term = "foo";
+        given(this.finder.search(term)).willReturn(recipes);
+
+        // When
+        final List<Recipe> output = this.controller.search(term);
+
+        // Then
+        assertThat(output).containsExactly(recipe1, recipe2);
+    }
+
+    @Test
+    void testSearchNoResult() {
+        // Given
+        final String term = "foo";
+        given(this.finder.search(term)).willReturn(Collections.emptyList());
+
+        // When
+        final List<Recipe> output = this.controller.search(term);
+
+        // Then
+        assertThat(output).isEmpty();
     }
 
     private JsonRecipe buildJsonRecipe(
