@@ -15,9 +15,9 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-class DatabaseUnitRepositoryTest implements IntegrationTest {
+class UnitRepositoryTest implements IntegrationTest {
 
-    private DatabaseUnitRepository repository;
+    private UnitRepository repository;
 
     @Autowired
     private UnitDAO dao;
@@ -27,7 +27,7 @@ class DatabaseUnitRepositoryTest implements IntegrationTest {
 
     @BeforeEach
     void setUp() {
-        this.repository = new DatabaseUnitRepository(this.dao);
+        this.repository = new UnitRepository(this.dao);
     }
 
     @Test

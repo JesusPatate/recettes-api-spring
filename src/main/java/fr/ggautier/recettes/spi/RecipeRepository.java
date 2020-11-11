@@ -13,12 +13,12 @@ import java.util.UUID;
 
 @Repository
 @Adapter
-public class DatabaseRecipeRepository implements Recipes {
+public class RecipeRepository implements Recipes {
 
     private final RecipeDAO dao;
 
     @Autowired
-    public DatabaseRecipeRepository(final RecipeDAO dao) {
+    public RecipeRepository(final RecipeDAO dao) {
         this.dao = dao;
     }
 

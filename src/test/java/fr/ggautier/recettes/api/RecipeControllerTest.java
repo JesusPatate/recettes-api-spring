@@ -113,8 +113,8 @@ class RecipeControllerTest implements IntegrationTest {
     @Test
     void testSearch() {
         // Given
-        final Recipe recipe1 = new Recipe(UUID.fromString("cc83467c-8192-454f-90bb-7e88bfdd8214"), "recipe1");
-        final Recipe recipe2 = new Recipe(UUID.fromString("436c61f5-0e81-4194-8e09-13f2fa043c7e"), "recipe2");
+        final Recipe recipe1 = new Recipe(UUID.randomUUID(), "recipe1");
+        final Recipe recipe2 = new Recipe(UUID.randomUUID(), "recipe2");
 
         final List<Recipe> recipes = new ArrayList<>();
         recipes.add(recipe1);

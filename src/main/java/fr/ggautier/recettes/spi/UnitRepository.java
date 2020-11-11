@@ -9,12 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class DatabaseUnitRepository implements Units {
+public class UnitRepository implements Units {
 
     private final UnitDAO dao;
 
     @Autowired
-    public DatabaseUnitRepository(final UnitDAO dao) {
+    public UnitRepository(final UnitDAO dao) {
         this.dao = dao;
     }
 

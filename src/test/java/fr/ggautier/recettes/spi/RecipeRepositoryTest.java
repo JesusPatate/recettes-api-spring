@@ -17,9 +17,9 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-class DatabaseRecipeRepositoryTest implements IntegrationTest {
+class RecipeRepositoryTest implements IntegrationTest {
 
-    private DatabaseRecipeRepository repository;
+    private RecipeRepository repository;
 
     @Autowired
     private RecipeDAO dao;
@@ -29,7 +29,7 @@ class DatabaseRecipeRepositoryTest implements IntegrationTest {
 
     @BeforeEach
     void setUp() {
-        this.repository = new DatabaseRecipeRepository(this.dao);
+        this.repository = new RecipeRepository(this.dao);
     }
 
     @Test
