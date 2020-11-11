@@ -1,6 +1,6 @@
 package fr.ggautier.recettes.e2e;
 
-import fr.ggautier.recettes.spi.UnitDbModel;
+import fr.ggautier.recettes.spi.db.DbUnit;
 import fr.ggautier.recettes.utils.EndToEndTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.ResultActions;
@@ -16,8 +16,8 @@ class GetAllUnits extends EndToEndTest {
     @Test
     void testGetAll() throws Exception {
         // Given
-        final UnitDbModel unit1 = new UnitDbModel(UUID.randomUUID(), "unit1");
-        final UnitDbModel unit2 = new UnitDbModel(UUID.randomUUID(), "unit2");
+        final DbUnit unit1 = new DbUnit(UUID.randomUUID(), "unit1");
+        final DbUnit unit2 = new DbUnit(UUID.randomUUID(), "unit2");
         this.store(unit1, unit2);
 
         // When

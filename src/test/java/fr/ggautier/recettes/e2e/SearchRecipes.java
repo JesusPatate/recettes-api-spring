@@ -1,7 +1,7 @@
 package fr.ggautier.recettes.e2e;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import fr.ggautier.recettes.spi.RecipeDbModel;
+import fr.ggautier.recettes.spi.db.DbRecipe;
 import fr.ggautier.recettes.utils.EndToEndTest;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.index.IndexRequest;
@@ -28,22 +28,22 @@ class SearchRecipes extends EndToEndTest {
     @Test
     void testSearch() throws Exception {
         // Given
-        final RecipeDbModel recipe1 = new RecipeDbModel(
+        final DbRecipe recipe1 = new DbRecipe(
             UUID.fromString("c11f9300-94d8-46c0-b903-40871b99305b"),
             "Foo bar"
         );
-        final RecipeDbModel recipe2 = new RecipeDbModel(
+        final DbRecipe recipe2 = new DbRecipe(
             UUID.fromString("c12f9300-94d8-46c0-b903-40871b99305b"),
             "Bar à vin"
         );
-        final RecipeDbModel recipe3 = new RecipeDbModel(
+        final DbRecipe recipe3 = new DbRecipe(
             UUID.fromString("c13f9300-94d8-46c0-b903-40871b99305b"),
             "Barack Obama"
         );
 
-        final RecipeDbModel[] dbRecipes = {recipe1, recipe2, recipe3};
-        this.store(dbRecipes);
-        this.storeInES(dbRecipes);
+        final DbRecipe[] recipes = {recipe1, recipe2, recipe3};
+        this.store(recipes);
+        this.storeInES(recipes);
 
         // When
         final String url = "/recipes/search?value=bar";
@@ -59,13 +59,13 @@ class SearchRecipes extends EndToEndTest {
         JSONAssert.assertEquals(expected, response.getContentAsString(), false);
     }
 
-    private void storeInES(final RecipeDbModel... recipes) throws IOException {
+    private void storeInES(final DbRecipe... recipes) throws IOException {
         final RestHighLevelClient client = new RestHighLevelClient(
             RestClient.builder(
                 new HttpHost("localhost", 9200, "http")
             ));
 
-        for (RecipeDbModel dbModel : recipes) {
+        for (DbRecipe dbModel : recipes) {
             final IndexRequest request = new IndexRequest("recipes", "recipe", dbModel.getId().toString());
             final String json = new ObjectMapper().writeValueAsString(dbModel);
             request.source(json, XContentType.JSON);

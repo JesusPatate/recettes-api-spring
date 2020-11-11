@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -67,7 +68,7 @@ public class RecipeController {
     }
 
     @PostMapping("/search")
-    public List<Recipe> search(@RequestParam(name = "value") final String term) {
+    public List<Recipe> search(@RequestParam(name = "value") final String term) throws IOException {
         return this.finder.search(term);
     }
 }

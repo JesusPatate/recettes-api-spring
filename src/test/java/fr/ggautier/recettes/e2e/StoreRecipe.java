@@ -3,7 +3,7 @@ package fr.ggautier.recettes.e2e;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.ggautier.recettes.api.JsonIngredient;
 import fr.ggautier.recettes.api.JsonRecipe;
-import fr.ggautier.recettes.spi.RecipeDbModel;
+import fr.ggautier.recettes.spi.db.DbRecipe;
 import fr.ggautier.recettes.utils.EndToEndTest;
 import fr.ggautier.recettes.utils.JsonRecipeBuilder;
 import org.junit.jupiter.api.Test;
@@ -47,8 +47,8 @@ class StoreRecipe extends EndToEndTest {
             .andExpect(jsonPath("$.id").value(recipe.getId().toString()))
             .andExpect(jsonPath("$.title").value(recipe.getTitle()));
 
-        final List<RecipeDbModel> recipes = this.getAllRecipes();
-        final RecipeDbModel expected = new RecipeDbModel(recipe.getId(), recipe.getTitle());
+        final List<DbRecipe> recipes = this.getAllRecipes();
+        final DbRecipe expected = new DbRecipe(recipe.getId(), recipe.getTitle());
 
         assertThat(recipes).containsExactly(expected);
     }

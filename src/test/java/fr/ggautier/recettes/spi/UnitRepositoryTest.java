@@ -1,6 +1,8 @@
 package fr.ggautier.recettes.spi;
 
 import fr.ggautier.recettes.domain.Unit;
+import fr.ggautier.recettes.spi.db.DbUnit;
+import fr.ggautier.recettes.spi.db.UnitDAO;
 import fr.ggautier.recettes.utils.IntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,8 +46,8 @@ class UnitRepositoryTest implements IntegrationTest {
     @Test
     void getAll() {
         // Given
-        final UnitDbModel unit1 = new UnitDbModel(UUID.randomUUID(), "unit1");
-        final UnitDbModel unit2 = new UnitDbModel(UUID.randomUUID(), "unit2");
+        final DbUnit unit1 = new DbUnit(UUID.randomUUID(), "unit1");
+        final DbUnit unit2 = new DbUnit(UUID.randomUUID(), "unit2");
         this.store(unit1, unit2);
 
         // When
@@ -59,7 +61,7 @@ class UnitRepositoryTest implements IntegrationTest {
                 unit.getName().equals(unit2.getName()));
     }
 
-    private void store(final UnitDbModel... units) {
+    private void store(final DbUnit... units) {
         Arrays.stream(units).forEach(this.entityManager::persist);
         this.entityManager.flush();
     }

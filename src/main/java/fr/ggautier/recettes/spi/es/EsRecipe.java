@@ -1,13 +1,14 @@
 package fr.ggautier.recettes.spi.es;
 
-import lombok.Getter;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
 import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.Set;
 
-@Getter
-public class Recipe {
+@Data
+public class EsRecipe {
 
     @Setter
     public static class Builder {
@@ -19,7 +20,7 @@ public class Recipe {
         private Integer servings = null;
         private Integer preparationTime = null;
         private Integer cookingTime = null;
-        private final Set<Ingredient> ingredients = new HashSet<>();
+        private final Set<EsIngredient> ingredients = new HashSet<>();
         private String source = null;
 
         public Builder setId(final String id) {
@@ -57,7 +58,7 @@ public class Recipe {
             return this;
         }
 
-        public Builder addIngredient(final Ingredient ingredient) {
+        public Builder addIngredient(final EsIngredient ingredient) {
             this.ingredients.add(ingredient);
             return this;
         }
@@ -67,8 +68,18 @@ public class Recipe {
             return this;
         }
 
-        public Recipe build() {
-            return Recipe.buildFrom(this);
+        public EsRecipe build() {
+            return new EsRecipe(
+                this.id,
+                this.title,
+                this.hot,
+                this.dessert,
+                this.servings,
+                this.ingredients,
+                this.preparationTime,
+                this.cookingTime,
+                this.source
+            );
         }
     }
 
@@ -82,7 +93,7 @@ public class Recipe {
 
     private final Integer servings;
 
-    private final Set<Ingredient> ingredients = new HashSet<>();
+    private final Set<EsIngredient> ingredients;
 
     private final Integer preparationTime;
 
@@ -90,44 +101,25 @@ public class Recipe {
 
     private final String source;
 
-    private Recipe(
-        final String id,
-        final String title,
-        final Boolean hot,
-        final Boolean dessert,
-        final Integer servings,
-        final Integer preparationTime,
-        final Integer cookingTime,
-        final String source
+    EsRecipe(
+        @JsonProperty("id") final String id,
+        @JsonProperty("title") final String title,
+        @JsonProperty("hot") final Boolean hot,
+        @JsonProperty("dessert") final Boolean dessert,
+        @JsonProperty("servings") final Integer servings,
+        @JsonProperty("ingredients") final Set<EsIngredient> ingredients,
+        @JsonProperty("preparationTime") final Integer preparationTime,
+        @JsonProperty("cookingTime") final Integer cookingTime,
+        @JsonProperty("sourc") final String source
     ) {
         this.id = id;
         this.title = title;
         this.hot = hot;
         this.dessert = dessert;
         this.servings = servings;
+        this.ingredients = ingredients;
         this.preparationTime = preparationTime;
         this.cookingTime = cookingTime;
         this.source = source;
-    }
-
-    private void addIngredient(final Ingredient ingredient) {
-        this.ingredients.add(ingredient);
-    }
-
-    private static Recipe buildFrom(final Builder builder) {
-        final Recipe recipe = new Recipe(
-            builder.id,
-            builder.title,
-            builder.hot,
-            builder.dessert,
-            builder.servings,
-            builder.preparationTime,
-            builder.cookingTime,
-            builder.source
-        );
-
-        builder.ingredients.forEach(recipe::addIngredient);
-
-        return recipe;
     }
 }

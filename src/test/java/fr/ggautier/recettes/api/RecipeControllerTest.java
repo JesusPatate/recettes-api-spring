@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -111,7 +112,7 @@ class RecipeControllerTest implements IntegrationTest {
     }
 
     @Test
-    void testSearch() {
+    void testSearch() throws IOException {
         // Given
         final Recipe recipe1 = new Recipe(UUID.randomUUID(), "recipe1");
         final Recipe recipe2 = new Recipe(UUID.randomUUID(), "recipe2");
@@ -131,7 +132,7 @@ class RecipeControllerTest implements IntegrationTest {
     }
 
     @Test
-    void testSearchNoResult() {
+    void testSearchNoResult() throws IOException {
         // Given
         final String term = "foo";
         given(this.finder.search(term)).willReturn(Collections.emptyList());

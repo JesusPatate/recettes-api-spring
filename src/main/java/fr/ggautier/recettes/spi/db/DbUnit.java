@@ -1,4 +1,4 @@
-package fr.ggautier.recettes.spi;
+package fr.ggautier.recettes.spi.db;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,17 +13,17 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "recipe")
-public class RecipeDbModel {
+@Table(name = "unit")
+public class DbUnit {
 
     /**
-     * Recipe's identifier.
+     * Unit's identifier.
      */
     @Id
-    private UUID id;
+    UUID id;
 
     /**
-     * Recipe's title.
+     * Unit's name.
      */
-    private String title;
+    String name;
 }

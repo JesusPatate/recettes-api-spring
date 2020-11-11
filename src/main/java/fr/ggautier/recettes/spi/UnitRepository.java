@@ -2,6 +2,7 @@ package fr.ggautier.recettes.spi;
 
 import fr.ggautier.recettes.domain.Unit;
 import fr.ggautier.recettes.domain.Units;
+import fr.ggautier.recettes.spi.db.UnitDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

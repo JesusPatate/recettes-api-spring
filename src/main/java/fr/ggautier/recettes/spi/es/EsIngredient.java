@@ -3,7 +3,7 @@ package fr.ggautier.recettes.spi.es;
 import lombok.Getter;
 
 @Getter
-public class Ingredient {
+public class EsIngredient {
 
     private final String name;
 
@@ -11,13 +11,13 @@ public class Ingredient {
 
     private final String unitId;
 
-    public Ingredient(final String name) {
+    public EsIngredient(final String name) {
         this.name = name;
         this.amount = null;
         this.unitId = null;
     }
 
-    public Ingredient(final String name, final int amount) {
+    public EsIngredient(final String name, final int amount) {
         this.name = name;
         this.amount = amount;
         this.unitId = null;
