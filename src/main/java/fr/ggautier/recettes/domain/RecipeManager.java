@@ -23,6 +23,7 @@ public class RecipeManager {
 
     public void store(final Recipe recipe) {
         this.recipes.add(recipe);
+        // TODO: index recipe
     }
 
     /**
