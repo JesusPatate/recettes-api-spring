@@ -2,6 +2,7 @@ package fr.ggautier.recettes.e2e;
 
 import fr.ggautier.recettes.spi.db.DbRecipe;
 import fr.ggautier.recettes.utils.EndToEndTest;
+import fr.ggautier.recettes.utils.ObjectBuilder;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -19,8 +20,8 @@ class GetAllRecipes extends EndToEndTest {
     @Test
     void testGetAll() throws Exception {
         // Given
-        final DbRecipe recipe1 = new DbRecipe(UUID.randomUUID(), "recipe1");
-        final DbRecipe recipe2 = new DbRecipe(UUID.randomUUID(), "recipe2");
+        final DbRecipe recipe1 = ObjectBuilder.buildDbRecipe(UUID.randomUUID(), "recipe1");
+        final DbRecipe recipe2 = ObjectBuilder.buildDbRecipe(UUID.randomUUID(), "recipe2");
         this.store(recipe1, recipe2);
 
         // When

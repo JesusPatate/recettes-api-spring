@@ -1,11 +1,11 @@
 package fr.ggautier.recettes.domain;
 
+import fr.ggautier.recettes.utils.ObjectBuilder;
 import fr.ggautier.recettes.utils.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,10 +31,10 @@ class RecipeFinderTest implements UnitTest {
     }
 
     @Test
-    void testSearch() throws IOException {
+    void testSearch() throws Exception {
         // Given
-        final Recipe recipe1 = new Recipe(UUID.fromString("cc83467c-8192-454f-90bb-7e88bfdd8214"), "recipe1");
-        final Recipe recipe2 = new Recipe(UUID.fromString("436c61f5-0e81-4194-8e09-13f2fa043c7e"), "recipe2");
+        final Recipe recipe1 = ObjectBuilder.buildRecipe(UUID.fromString("cc83467c-8192-454f-90bb-7e88bfdd8214"), "recipe1");
+        final Recipe recipe2 = ObjectBuilder.buildRecipe(UUID.fromString("436c61f5-0e81-4194-8e09-13f2fa043c7e"), "recipe2");
 
         final List<Recipe> recipes = new ArrayList<>();
         recipes.add(recipe1);
@@ -51,7 +51,7 @@ class RecipeFinderTest implements UnitTest {
     }
 
     @Test
-    void testSearchNoResult() throws IOException {
+    void testSearchNoResult() throws Exception {
         // Given
         final String term = "foo";
         given(this.recipes.search(term)).willReturn(Collections.emptyList());

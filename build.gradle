@@ -2,6 +2,7 @@ plugins {
 	id 'org.springframework.boot' version '2.2.2.RELEASE'
 	id 'io.spring.dependency-management' version '1.0.8.RELEASE'
 	id 'java'
+	id "org.flywaydb.flyway" version "7.2.0"
 }
 
 group = 'fr.ggautier'
@@ -32,11 +33,15 @@ dependencies {
 
 	implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:6.6.1'
 
+	runtimeOnly 'org.postgresql:postgresql'
+
+	implementation "org.flywaydb:flyway-core"
+
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
 
-	runtimeOnly 'com.h2database:h2'
+	testRuntimeOnly 'com.h2database:h2'
 
 	compileOnly 'fr.ggautier.arch:annotations:1.0.0-SNAPSHOT'
 

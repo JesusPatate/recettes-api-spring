@@ -3,10 +3,16 @@ package fr.ggautier.recettes.e2e;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.ggautier.recettes.api.JsonIngredient;
 import fr.ggautier.recettes.api.JsonRecipe;
+import fr.ggautier.recettes.domain.Recipe;
+import fr.ggautier.recettes.domain.Unit;
+import fr.ggautier.recettes.domain.UnknownUnitException;
+import fr.ggautier.recettes.spi.db.DbIngredient;
 import fr.ggautier.recettes.spi.db.DbRecipe;
+import fr.ggautier.recettes.spi.db.DbRecipeMapper;
 import fr.ggautier.recettes.utils.EndToEndTest;
-import fr.ggautier.recettes.utils.JsonRecipeBuilder;
+import fr.ggautier.recettes.utils.ObjectBuilder;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -23,20 +29,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 class StoreRecipe extends EndToEndTest {
 
+    @Autowired
+    private DbRecipeMapper mapper;
+
     @Test
     void testStore() throws Exception {
         // Given
-        final JsonRecipe recipe = this.buildRecipe(
+        final JsonRecipe recipe = ObjectBuilder.buildJsonRecipe(
             UUID.randomUUID(),
             "recipe1",
             new JsonIngredient("ingredient 1", null, null),
             new JsonIngredient("ingredient 2", 2, null),
-            new JsonIngredient("ingredient 3", 10, UUID.randomUUID())
+            new JsonIngredient("ingredient 3", 10, Unit.GRAMS.name())
         );
 
-        final String json = new ObjectMapper().writeValueAsString(recipe);
-
         // When
+        final String json = new ObjectMapper().writeValueAsString(recipe);
         final ResultActions actions = mvc.perform(
             MockMvcRequestBuilders.put("/recipes/{id}", recipe.getId())
                 .content(json)
@@ -48,19 +56,23 @@ class StoreRecipe extends EndToEndTest {
             .andExpect(jsonPath("$.title").value(recipe.getTitle()));
 
         final List<DbRecipe> recipes = this.getAllRecipes();
-        final DbRecipe expected = new DbRecipe(recipe.getId(), recipe.getTitle());
+        final DbRecipe expected = toDbRecipe(recipe);
 
         assertThat(recipes).containsExactly(expected);
+    }
+
+    private Recipe toRecipe(DbRecipe dbModel) {
+        try {
+            return this.mapper.fromDbModel(dbModel);
+        } catch (UnknownUnitException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
     void testStoreInvalidRecipe() throws Exception {
         // Given
-        final JsonRecipe recipe = this.buildRecipe(
-            UUID.randomUUID(),
-            ""
-        );
-
+        final JsonRecipe recipe = ObjectBuilder.buildJsonRecipe(UUID.randomUUID(), "");
         final String json = new ObjectMapper().writeValueAsString(recipe);
 
         // When
@@ -76,15 +88,14 @@ class StoreRecipe extends EndToEndTest {
             .andExpect(jsonPath("$.length()").value(2));
     }
 
-    private JsonRecipe buildRecipe(final UUID id, final String title, final JsonIngredient... ingredients) {
-        final JsonRecipeBuilder builder = new JsonRecipeBuilder()
-            .setId(id)
-            .setTitle(title);
+    private DbRecipe toDbRecipe(JsonRecipe recipe) {
+        final DbIngredient[] dbIngredients = recipe.getIngredients().stream()
+            .map(ingredient -> new DbIngredient(
+                ingredient.getName(),
+                ingredient.getAmount().orElse(null),
+                ingredient.getUnit().orElse(null)
+            )).toArray(DbIngredient[]::new);
 
-        for (final JsonIngredient ingredient : ingredients) {
-            builder.addIngredient(ingredient);
-        }
-
-        return builder.build();
+        return ObjectBuilder.buildDbRecipe(recipe.getId(), recipe.getTitle(), dbIngredients);
     }
 }

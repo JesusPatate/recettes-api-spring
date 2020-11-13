@@ -3,10 +3,12 @@ package fr.ggautier.recettes.spi;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.ggautier.recettes.domain.Recipe;
 import fr.ggautier.recettes.spi.db.DbRecipe;
+import fr.ggautier.recettes.spi.db.DbRecipeMapper;
 import fr.ggautier.recettes.spi.db.RecipeDAO;
 import fr.ggautier.recettes.spi.es.EsClient;
 import fr.ggautier.recettes.spi.es.EsRecipeMapper;
 import fr.ggautier.recettes.utils.IntegrationTest;
+import fr.ggautier.recettes.utils.ObjectBuilder;
 import org.apache.http.HttpHost;
 import org.assertj.core.api.SoftAssertions;
 import org.elasticsearch.action.index.IndexRequest;
@@ -46,6 +48,9 @@ class RecipeRepositoryTest implements IntegrationTest {
     private EsRecipeMapper esRecipeMapper;
 
     @Autowired
+    private DbRecipeMapper dbRecipeMapper;
+
+    @Autowired
     private TestEntityManager entityManager;
 
     @Value("${es.host}")
@@ -66,18 +71,23 @@ class RecipeRepositoryTest implements IntegrationTest {
         public EsRecipeMapper esRecipeMapper() {
             return new EsRecipeMapper();
         }
+
+        @Bean
+        public DbRecipeMapper dbRecipeMapper() {
+            return new DbRecipeMapper();
+        }
     }
 
     @BeforeEach
     void setUp() {
-        this.repository = new RecipeRepository(this.dao, this.esClient, esRecipeMapper);
+        this.repository = new RecipeRepository(this.dao, this.esClient, this.esRecipeMapper, this.dbRecipeMapper);
     }
 
     @Test
     void testGetAll() {
         // Given
-        final DbRecipe recipe1 = new DbRecipe(UUID.randomUUID(), "recipe1");
-        final DbRecipe recipe2 = new DbRecipe(UUID.randomUUID(), "recipe2");
+        final DbRecipe recipe1 = ObjectBuilder.buildDbRecipe(UUID.randomUUID(), "recipe1");
+        final DbRecipe recipe2 = ObjectBuilder.buildDbRecipe(UUID.randomUUID(), "recipe2");
         this.storeInDB(recipe1, recipe2);
 
         // When
@@ -94,14 +104,14 @@ class RecipeRepositoryTest implements IntegrationTest {
     @Test
     void testGet() {
         // Given
-        final DbRecipe recipe = new DbRecipe(UUID.randomUUID(), "recipe1");
+        final DbRecipe recipe = ObjectBuilder.buildDbRecipe(UUID.randomUUID(), "recipe1");
         this.storeInDB(recipe);
 
         // When
         final Optional<Recipe> result = this.repository.get(recipe.getId());
 
         // Then
-        final Recipe expected = new Recipe(recipe.getId(), recipe.getTitle());
+        final Recipe expected = ObjectBuilder.buildRecipe(recipe.getId(), recipe.getTitle());
 
         assertThat(result).contains(expected);
     }
@@ -109,7 +119,7 @@ class RecipeRepositoryTest implements IntegrationTest {
     @Test
     void testAdd() {
         // Given
-        final Recipe recipe = new Recipe(UUID.randomUUID(), "recipe1");
+        final Recipe recipe = ObjectBuilder.buildRecipe(UUID.randomUUID(), "recipe1");
 
         // When
         this.repository.add(recipe);
@@ -128,12 +138,12 @@ class RecipeRepositoryTest implements IntegrationTest {
     @Test
     void testRemove() {
         // Given
-        final DbRecipe recipe1 = new DbRecipe(UUID.randomUUID(), "recipe1");
-        final DbRecipe recipe2 = new DbRecipe(UUID.randomUUID(), "recipe2");
+        final DbRecipe recipe1 = ObjectBuilder.buildDbRecipe(UUID.randomUUID(), "recipe1");
+        final DbRecipe recipe2 = ObjectBuilder.buildDbRecipe(UUID.randomUUID(), "recipe2");
         this.storeInDB(recipe1, recipe2);
 
         // When
-        final Recipe recipe = new Recipe(recipe1.getId(), recipe1.getTitle());
+        final Recipe recipe = ObjectBuilder.buildRecipe(recipe1.getId(), recipe1.getTitle());
         this.repository.remove(recipe);
 
         // Then
@@ -147,17 +157,17 @@ class RecipeRepositoryTest implements IntegrationTest {
     }
 
     @Test
-    void testSearch() throws IOException {
+    void testSearch() throws Exception {
         // Given
-        final DbRecipe recipe1 = new DbRecipe(
+        final DbRecipe recipe1 = ObjectBuilder.buildDbRecipe(
             UUID.fromString("c11f9300-94d8-46c0-b903-40871b99305b"),
             "Foo bar"
         );
-        final DbRecipe recipe2 = new DbRecipe(
+        final DbRecipe recipe2 = ObjectBuilder.buildDbRecipe(
             UUID.fromString("c12f9300-94d8-46c0-b903-40871b99305b"),
             "Bar à vin"
         );
-        final DbRecipe recipe3 = new DbRecipe(
+        final DbRecipe recipe3 = ObjectBuilder.buildDbRecipe(
             UUID.fromString("c13f9300-94d8-46c0-b903-40871b99305b"),
             "Barack Obama"
         );
@@ -169,15 +179,15 @@ class RecipeRepositoryTest implements IntegrationTest {
         final List<Recipe> results = this.repository.search("bar");
 
         // Then
-        final Recipe expected1 = new Recipe(recipe1.getId(), recipe1.getTitle());
-        final Recipe expected2 = new Recipe(recipe2.getId(), recipe2.getTitle());
+        final Recipe expected1 = ObjectBuilder.buildRecipe(recipe1.getId(), recipe1.getTitle());
+        final Recipe expected2 = ObjectBuilder.buildRecipe(recipe2.getId(), recipe2.getTitle());
         final Recipe[] expected = {expected1, expected2};
 
         assertThat(results).containsExactly(expected);
     }
 
     @Test
-    void testSearchNoResult() throws IOException {
+    void testSearchNoResult() throws Exception {
         // Given
 
         // When

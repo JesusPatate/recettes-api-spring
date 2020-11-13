@@ -4,13 +4,14 @@ import fr.ggautier.recettes.domain.Recipe;
 import fr.ggautier.recettes.domain.RecipeFinder;
 import fr.ggautier.recettes.domain.RecipeManager;
 import fr.ggautier.recettes.utils.IntegrationTest;
-import fr.ggautier.recettes.utils.JsonRecipeBuilder;
-import org.junit.jupiter.api.BeforeEach;
+import fr.ggautier.recettes.utils.ObjectBuilder;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Bean;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -21,21 +22,26 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
+@WebMvcTest
 class RecipeControllerTest implements IntegrationTest {
 
+    @TestConfiguration
+    static class RecipeControllerTestContextConfiguration {
+
+        @Bean
+        public JsonRecipeMapper jsonRecipeMapper() {
+            return new JsonRecipeMapper();
+        }
+    }
+
+    @Autowired
     private RecipeController controller;
 
-    @Mock
+    @MockBean
     private RecipeManager manager;
 
-    @Mock
+    @MockBean
     private RecipeFinder finder;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.initMocks(this);
-        this.controller = new RecipeController(this.manager, this.finder);
-    }
 
     /**
      * When no recipe is saved, {@link RecipeController} should return an empty list to GET requests to /recipes.
@@ -55,8 +61,8 @@ class RecipeControllerTest implements IntegrationTest {
     @Test
     void testGetAll() {
         // Given
-        final Recipe recipe1 = new Recipe(UUID.randomUUID(), "recipe1");
-        final Recipe recipe2 = new Recipe(UUID.randomUUID(), "recipe2");
+        final Recipe recipe1 = ObjectBuilder.buildRecipe(UUID.randomUUID(), "recipe1");
+        final Recipe recipe2 = ObjectBuilder.buildRecipe(UUID.randomUUID(), "recipe2");
 
         final List<Recipe> recipes = new ArrayList<>();
         recipes.add(recipe1);
@@ -75,20 +81,20 @@ class RecipeControllerTest implements IntegrationTest {
     void testStore() throws Exception {
         // Given
         final UUID id = UUID.randomUUID();
-        final JsonRecipe json = this.buildJsonRecipe(id, "recipe1");
+        final JsonRecipe json = ObjectBuilder.buildJsonRecipe(id, "recipe1");
 
         // When
         final Recipe output = this.controller.store(id, json);
 
         // Then
-        final Recipe expected = new Recipe(id, json.getTitle());
+        final Recipe expected = ObjectBuilder.buildRecipe(id, json.getTitle());
         assertThat(output).isEqualTo(expected);
     }
 
     @Test
     void testStoreNotMatchingIds() {
         // Given
-        final JsonRecipe json = this.buildJsonRecipe(UUID.randomUUID(), "recipe1");
+        final JsonRecipe json = ObjectBuilder.buildJsonRecipe(UUID.randomUUID(), "recipe1");
 
         // When
         final Throwable throwable = catchThrowable(() -> this.controller.store(UUID.randomUUID(), json));
@@ -102,7 +108,7 @@ class RecipeControllerTest implements IntegrationTest {
     @Test
     void testDelete() throws Exception {
         // Given
-        final JsonRecipe json = buildJsonRecipe(UUID.randomUUID(), "recipe1");
+        final JsonRecipe json = ObjectBuilder.buildJsonRecipe(UUID.randomUUID(), "recipe1");
 
         // When
         this.controller.delete(json.getId());
@@ -112,10 +118,10 @@ class RecipeControllerTest implements IntegrationTest {
     }
 
     @Test
-    void testSearch() throws IOException {
+    void testSearch() throws Exception {
         // Given
-        final Recipe recipe1 = new Recipe(UUID.randomUUID(), "recipe1");
-        final Recipe recipe2 = new Recipe(UUID.randomUUID(), "recipe2");
+        final Recipe recipe1 = ObjectBuilder.buildRecipe(UUID.randomUUID(), "recipe1");
+        final Recipe recipe2 = ObjectBuilder.buildRecipe(UUID.randomUUID(), "recipe2");
 
         final List<Recipe> recipes = new ArrayList<>();
         recipes.add(recipe1);
@@ -132,7 +138,7 @@ class RecipeControllerTest implements IntegrationTest {
     }
 
     @Test
-    void testSearchNoResult() throws IOException {
+    void testSearchNoResult() throws Exception {
         // Given
         final String term = "foo";
         given(this.finder.search(term)).willReturn(Collections.emptyList());
@@ -142,21 +148,5 @@ class RecipeControllerTest implements IntegrationTest {
 
         // Then
         assertThat(output).isEmpty();
-    }
-
-    private JsonRecipe buildJsonRecipe(
-        final UUID id,
-        final String title,
-        final JsonIngredient... ingredients
-    ) {
-        final JsonRecipeBuilder builder = new JsonRecipeBuilder()
-            .setId(id)
-            .setTitle(title);
-
-        for (JsonIngredient ingredient : ingredients) {
-            builder.addIngredient(ingredient);
-        }
-
-        return builder.build();
     }
 }

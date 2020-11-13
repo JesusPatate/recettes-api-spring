@@ -3,6 +3,7 @@ package fr.ggautier.recettes.e2e;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.ggautier.recettes.spi.db.DbRecipe;
 import fr.ggautier.recettes.utils.EndToEndTest;
+import fr.ggautier.recettes.utils.ObjectBuilder;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.RequestOptions;
@@ -28,15 +29,15 @@ class SearchRecipes extends EndToEndTest {
     @Test
     void testSearch() throws Exception {
         // Given
-        final DbRecipe recipe1 = new DbRecipe(
+        final DbRecipe recipe1 = ObjectBuilder.buildDbRecipe(
             UUID.fromString("c11f9300-94d8-46c0-b903-40871b99305b"),
             "Foo bar"
         );
-        final DbRecipe recipe2 = new DbRecipe(
+        final DbRecipe recipe2 = ObjectBuilder.buildDbRecipe(
             UUID.fromString("c12f9300-94d8-46c0-b903-40871b99305b"),
             "Bar à vin"
         );
-        final DbRecipe recipe3 = new DbRecipe(
+        final DbRecipe recipe3 = ObjectBuilder.buildDbRecipe(
             UUID.fromString("c13f9300-94d8-46c0-b903-40871b99305b"),
             "Barack Obama"
         );

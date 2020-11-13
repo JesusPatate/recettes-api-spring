@@ -9,17 +9,17 @@ public class EsIngredient {
 
     private final Integer amount;
 
-    private final String unitId;
+    private final String unit;
 
     public EsIngredient(final String name) {
         this.name = name;
         this.amount = null;
-        this.unitId = null;
+        this.unit = null;
     }
 
     public EsIngredient(final String name, final int amount) {
         this.name = name;
         this.amount = amount;
-        this.unitId = null;
+        this.unit = null;
     }
 }

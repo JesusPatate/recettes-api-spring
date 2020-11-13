@@ -3,6 +3,7 @@ package fr.ggautier.recettes.spi;
 import fr.ggautier.arch.annotations.Adapter;
 import fr.ggautier.recettes.domain.Recipe;
 import fr.ggautier.recettes.domain.Recipes;
+import fr.ggautier.recettes.domain.UnknownUnitException;
 import fr.ggautier.recettes.spi.db.DbRecipe;
 import fr.ggautier.recettes.spi.db.DbRecipeMapper;
 import fr.ggautier.recettes.spi.db.RecipeDAO;
@@ -12,7 +13,6 @@ import fr.ggautier.recettes.spi.es.EsRecipeMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -27,13 +27,20 @@ public class RecipeRepository implements Recipes {
     private final EsClient esClient;
 
     private final EsRecipeMapper esRecipeMapper;
-    private final DbRecipeMapper dbModelMapper = new DbRecipeMapper();
+
+    private final DbRecipeMapper dbModelMapper;
 
     @Autowired
-    public RecipeRepository(final RecipeDAO dao, final EsClient esClient, final EsRecipeMapper esRecipeMapper) {
+    public RecipeRepository(
+        final RecipeDAO dao,
+        final EsClient esClient,
+        final EsRecipeMapper esRecipeMapper,
+        final DbRecipeMapper dbModelMapper
+    ) {
         this.dao = dao;
         this.esClient = esClient;
         this.esRecipeMapper = esRecipeMapper;
+        this.dbModelMapper = dbModelMapper;
     }
 
     @Override
@@ -41,7 +48,7 @@ public class RecipeRepository implements Recipes {
         final List<Recipe> recipes = new ArrayList<>();
 
         this.dao.findAll().forEach(dbModel -> {
-            final Recipe recipe = dbModelMapper.fromDbModel(dbModel);
+            final Recipe recipe = this.fromDbModel(dbModel);
             recipes.add(recipe);
         });
 
@@ -50,19 +57,18 @@ public class RecipeRepository implements Recipes {
 
     @Override
     public Optional<Recipe> get(final UUID id) {
-        return this.dao.findById(id)
-            .map(this.dbModelMapper::fromDbModel);
+        return this.dao.findById(id).map(this::fromDbModel);
     }
 
     @Override
-    public List<Recipe> search(String term) throws IOException {
+    public List<Recipe> search(String term) throws Exception {
         final List<EsRecipe> results = this.esClient.searchRecipe(term);
         final List<Recipe> recipes = new ArrayList<>();
 
-        results.forEach(result -> {
+        for (EsRecipe result : results) {
             final Recipe recipe = this.esRecipeMapper.toRecipe(result);
             recipes.add(recipe);
-        });
+        }
 
         return recipes;
     }
@@ -79,21 +85,11 @@ public class RecipeRepository implements Recipes {
         this.dao.delete(dbModel);
     }
 
-    /**
-     * Builds a DB representation of a recipe.
-     *
-     * @param recipe The recipe to convert into a DB representation
-     */
-    private DbRecipe toDbModel(final Recipe recipe) {
-        return dbModelMapper.toDbModel(recipe);
-    }
-
-    /**
-     * Reconstructs a recipe from its DB representation.
-     *
-     * @param dbModel The DB representation of the recipe to be reconstructed
-     */
-    private Recipe fromDbModel(final DbRecipe dbModel) {
-        return dbModelMapper.fromDbModel(dbModel);
+    private Recipe fromDbModel(DbRecipe dbModel) {
+        try {
+            return this.dbModelMapper.fromDbModel(dbModel);
+        } catch (final UnknownUnitException exception) {
+            throw new RuntimeException(exception);
+        }
     }
 }

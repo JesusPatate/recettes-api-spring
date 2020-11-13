@@ -8,43 +8,43 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 
 @Representation
 public class JsonIngredient {
 
     @NotBlank
+    @JsonProperty
     private final String name;
 
     @Min(1)
     @JsonProperty
     private final Integer amount;
 
-    @JsonProperty("unit")
-    private final UUID unitId;
+    @JsonProperty
+    private final String unit;
 
     public JsonIngredient(
         @JsonProperty("name") final String name,
         @JsonProperty("amount") final Integer amount,
-        @JsonProperty("unit") final UUID unitId
+        @JsonProperty("unit") final String unit
     ) {
         this.name = name;
         this.amount = amount;
-        this.unitId = unitId;
+        this.unit = unit;
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     @JsonIgnore
     public Optional<Integer> getAmount() {
-        return Optional.ofNullable(amount);
+        return Optional.ofNullable(this.amount);
     }
 
     @JsonIgnore
-    public Optional<UUID> getUnitId() {
-        return Optional.ofNullable(unitId);
+    public Optional<String> getUnit() {
+        return Optional.ofNullable(this.unit);
     }
 
     @Override
@@ -59,13 +59,13 @@ public class JsonIngredient {
 
         final JsonIngredient other = (JsonIngredient) object;
 
-        return name.equals(other.name) &&
-            Objects.equals(amount, other.amount) &&
-            Objects.equals(unitId, other.unitId);
+        return this.name.equals(other.name) &&
+            Objects.equals(this.amount, other.amount) &&
+            Objects.equals(this.unit, other.unit);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, amount, unitId);
+        return Objects.hash(this.name, this.amount, this.unit);
     }
 }

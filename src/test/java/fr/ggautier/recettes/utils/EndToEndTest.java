@@ -1,7 +1,6 @@
 package fr.ggautier.recettes.utils;
 
 import fr.ggautier.recettes.spi.db.DbRecipe;
-import fr.ggautier.recettes.spi.db.DbUnit;
 import org.junit.jupiter.api.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
@@ -47,11 +46,6 @@ public abstract class EndToEndTest {
     }
 
     protected void store(final DbRecipe... recipes) {
-        Arrays.stream(recipes).forEach(this.entityManager::persist);
-        this.entityManager.flush();
-    }
-
-    protected void store(final DbUnit... recipes) {
         Arrays.stream(recipes).forEach(this.entityManager::persist);
         this.entityManager.flush();
     }

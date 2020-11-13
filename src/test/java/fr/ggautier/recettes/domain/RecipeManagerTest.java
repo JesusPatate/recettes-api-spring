@@ -1,5 +1,6 @@
 package fr.ggautier.recettes.domain;
 
+import fr.ggautier.recettes.utils.ObjectBuilder;
 import fr.ggautier.recettes.utils.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -17,14 +18,13 @@ import static org.mockito.Mockito.verify;
 
 class RecipeManagerTest implements UnitTest {
 
-    private final RecipeManager service;
+    private RecipeManager service;
 
     @Mock
     private Recipes repository;
 
     RecipeManagerTest() {
         MockitoAnnotations.initMocks(this);
-
         this.service = new RecipeManager(this.repository);
     }
 
@@ -42,8 +42,8 @@ class RecipeManagerTest implements UnitTest {
     @Test
     void testGetAll() {
         // Given
-        final Recipe recipe1 = new Recipe(UUID.randomUUID(), "recipe1");
-        final Recipe recipe2 = new Recipe(UUID.randomUUID(), "recipe2");
+        final Recipe recipe1 = ObjectBuilder.buildRecipe(UUID.randomUUID(), "recipe1");
+        final Recipe recipe2 = ObjectBuilder.buildRecipe(UUID.randomUUID(), "recipe2");
 
         final List<Recipe> recipes = new ArrayList<>();
         recipes.add(recipe1);
@@ -61,7 +61,7 @@ class RecipeManagerTest implements UnitTest {
     @Test
     void testStore() {
         // Given
-        final Recipe recipe = new Recipe(UUID.randomUUID(), "recipe1");
+        final Recipe recipe = ObjectBuilder.buildRecipe(UUID.randomUUID(), "recipe1");
 
         // When
         this.service.store(recipe);
@@ -73,7 +73,7 @@ class RecipeManagerTest implements UnitTest {
     @Test
     void testDelete() {
         // Given
-        final Recipe recipe = new Recipe(UUID.randomUUID(), "recipe1");
+        final Recipe recipe = ObjectBuilder.buildRecipe(UUID.randomUUID(), "recipe1");
 
         given(this.repository.get(recipe.getId())).willReturn(Optional.of(recipe));
 

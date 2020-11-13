@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -34,10 +33,17 @@ public class RecipeController {
 
     private final RecipeFinder finder;
 
+    private final JsonRecipeMapper jsonRecipeMapper;
+
     @Autowired
-    public RecipeController(final RecipeManager manager, final RecipeFinder finder) {
+    public RecipeController(
+        final RecipeManager manager,
+        final RecipeFinder finder,
+        final JsonRecipeMapper jsonRecipeMapper
+    ) {
         this.manager = manager;
         this.finder = finder;
+        this.jsonRecipeMapper = jsonRecipeMapper;
     }
 
     @GetMapping
@@ -47,13 +53,13 @@ public class RecipeController {
 
     @PutMapping("/{id}")
     public Recipe store(@PathVariable("id") final UUID id, @RequestBody @Valid final JsonRecipe json)
-        throws NotMatchingIdentifiersException {
+        throws Exception {
 
         if (!id.equals(json.getId())) {
             throw new NotMatchingIdentifiersException();
         }
 
-        final Recipe recipe = new Recipe(id, json.getTitle());
+        final Recipe recipe = this.jsonRecipeMapper.toRecipe(json);
         this.manager.store(recipe);
         return recipe;
     }
@@ -68,7 +74,7 @@ public class RecipeController {
     }
 
     @PostMapping("/search")
-    public List<Recipe> search(@RequestParam(name = "value") final String term) throws IOException {
+    public List<Recipe> search(@RequestParam(name = "value") final String term) throws Exception {
         return this.finder.search(term);
     }
 }
