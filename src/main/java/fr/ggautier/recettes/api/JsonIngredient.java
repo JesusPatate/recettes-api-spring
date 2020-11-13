@@ -3,13 +3,14 @@ package fr.ggautier.recettes.api;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.ggautier.arch.annotations.rest.Representation;
+import lombok.EqualsAndHashCode;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
-import java.util.Objects;
 import java.util.Optional;
 
 @Representation
+@EqualsAndHashCode
 public class JsonIngredient {
 
     @NotBlank
@@ -45,27 +46,5 @@ public class JsonIngredient {
     @JsonIgnore
     public Optional<String> getUnit() {
         return Optional.ofNullable(this.unit);
-    }
-
-    @Override
-    public boolean equals(final Object object) {
-        if (this == object) {
-            return true;
-        }
-
-        if (object == null || this.getClass() != object.getClass()) {
-            return false;
-        }
-
-        final JsonIngredient other = (JsonIngredient) object;
-
-        return this.name.equals(other.name) &&
-            Objects.equals(this.amount, other.amount) &&
-            Objects.equals(this.unit, other.unit);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(this.name, this.amount, this.unit);
     }
 }
