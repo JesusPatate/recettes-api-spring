@@ -20,7 +20,10 @@
             },
             "name": {
               "type": "text",
-              "analyzer": "french"
+              "analyzer": "french",
+              "copy_to": [
+                "title_ingredients"
+              ]
             },
             "unit": {
               "type": "text",
@@ -39,6 +42,13 @@
           "index": false
         },
         "title": {
+          "type": "text",
+          "analyzer": "french",
+          "copy_to": [
+            "title_ingredients"
+          ]
+        },
+        "title_ingredients": {
           "type": "text",
           "analyzer": "french"
         }

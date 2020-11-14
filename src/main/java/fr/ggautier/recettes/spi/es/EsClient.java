@@ -43,7 +43,7 @@ public class EsClient {
             ));
 
         final SearchSourceBuilder query = new SearchSourceBuilder()
-            .query(QueryBuilders.multiMatchQuery(term, "title", "ingredients.name"));
+            .query(QueryBuilders.matchQuery("title_ingredients", term));
 
         final SearchRequest request = new SearchRequest("recipes").source(query);
         final SearchResponse response = client.search(request, RequestOptions.DEFAULT);
@@ -51,7 +51,7 @@ public class EsClient {
         final List<EsRecipe> recipes = new ArrayList<>();
         final ObjectMapper objectMapper = new ObjectMapper();
 
-        for (SearchHit hit : hits) {
+        for (final SearchHit hit : hits) {
             final String source = hit.getSourceAsString();
             final EsRecipe recipe = objectMapper.readValue(source, EsRecipe.class);
             recipes.add(recipe);
