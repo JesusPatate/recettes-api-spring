@@ -10,6 +10,8 @@ import fr.ggautier.recettes.spi.db.RecipeDAO;
 import fr.ggautier.recettes.spi.es.EsClient;
 import fr.ggautier.recettes.spi.es.EsRecipe;
 import fr.ggautier.recettes.spi.es.EsRecipeMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -21,6 +23,8 @@ import java.util.UUID;
 @Repository
 @Adapter
 public class RecipeRepository implements Recipes {
+
+    private final static Logger LOG = LoggerFactory.getLogger(RecipeRepository.class);
 
     private final RecipeDAO dao;
 
@@ -75,8 +79,15 @@ public class RecipeRepository implements Recipes {
 
     @Override
     public void add(final Recipe recipe) {
-        final DbRecipe dbModel = dbModelMapper.toDbModel(recipe);
+        final DbRecipe dbModel = this.dbModelMapper.toDbModel(recipe);
         this.dao.save(dbModel);
+
+        try {
+            final EsRecipe esModel = this.esRecipeMapper.toEsRecipe(recipe);
+            this.esClient.index(esModel);
+        } catch (final Exception exception) {
+            LOG.error("Failed to index recipe ({})", recipe, exception);
+        }
     }
 
     @Override
@@ -85,6 +96,11 @@ public class RecipeRepository implements Recipes {
         this.dao.delete(dbModel);
     }
 
+    /**
+     * Reconstructs a recipe from its database representation.
+     *
+     * @param dbModel Database model of the recipe
+     */
     private Recipe fromDbModel(DbRecipe dbModel) {
         try {
             return this.dbModelMapper.fromDbModel(dbModel);

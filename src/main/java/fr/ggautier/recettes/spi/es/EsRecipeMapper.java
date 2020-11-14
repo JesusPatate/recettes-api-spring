@@ -2,16 +2,16 @@ package fr.ggautier.recettes.spi.es;
 
 import fr.ggautier.recettes.domain.Ingredient;
 import fr.ggautier.recettes.domain.Recipe;
+import fr.ggautier.recettes.domain.Unit;
 import fr.ggautier.recettes.domain.UnknownUnitException;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Component
 public class EsRecipeMapper {
 
-    public Recipe toRecipe(final EsRecipe esRecipe) throws UnknownUnitException {
+    public Recipe toRecipe(final EsRecipe esRecipe) {
         final Recipe.Builder builder = new Recipe.Builder()
             .setId(UUID.fromString(esRecipe.getId()))
             .setTitle(esRecipe.getTitle())
@@ -30,8 +30,35 @@ public class EsRecipeMapper {
         return builder.build();
     }
 
-    private Ingredient toIngredient(final EsIngredient esIngredient) throws UnknownUnitException {
-        final String unit = Optional.ofNullable(esIngredient.getUnit()).orElse(null);
-        return new Ingredient(esIngredient.getName(), esIngredient.getAmount(), unit);
+    public EsRecipe toEsRecipe(final Recipe recipe) {
+        final EsRecipe.Builder builder = new EsRecipe.Builder()
+            .setId(recipe.getId().toString())
+            .setTitle(recipe.getTitle())
+            .setHot(recipe.getHot())
+            .setDessert(recipe.getDessert())
+            .setPreparationTime(recipe.getPreparationTime())
+            .setCookingTime(recipe.getCookingTime())
+            .setServings(recipe.getServings())
+            .setSource(recipe.getSource());
+
+        recipe.getIngredients().stream()
+            .map(this::toIngredient)
+            .forEach(builder::addIngredient);
+
+        return builder.build();
+    }
+
+    private Ingredient toIngredient(EsIngredient i) {
+        try {
+            return new Ingredient(i.getName(), i.getAmount(), i.getUnit());
+        } catch (final UnknownUnitException exception) {
+            throw new RuntimeException(exception.getMessage(), exception);
+        }
+    }
+
+    private EsIngredient toIngredient(final Ingredient ingredient) {
+        final Integer amount = ingredient.getAmount().orElse(null);
+        final String unit = ingredient.getUnit().map(Unit::name).orElse(null);
+        return new EsIngredient(ingredient.getName(), amount, unit);
     }
 }
