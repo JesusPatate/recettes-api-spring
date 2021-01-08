@@ -15,19 +15,49 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 /**
- * Tests of {@link RecipeFinder}.
+ * Tests of {@link RecipeBrowser}.
  */
-class RecipeFinderTest implements UnitTest {
+class RecipeBrowserTest implements UnitTest {
 
-    private final RecipeFinder service;
+    private final RecipeBrowser service;
 
     @Mock
-    private Recipes recipes;
+    private IStoreRecipes recipes;
 
-    RecipeFinderTest() {
+    RecipeBrowserTest() {
         MockitoAnnotations.initMocks(this);
 
-        this.service = new RecipeFinder(recipes);
+        this.service = new RecipeBrowser(this.recipes);
+    }
+
+    @Test
+    void testGetAllNoRecipe() {
+        given(this.recipes.getAll()).willReturn(Collections.emptyList());
+
+        // When
+        final List<Recipe> result = this.service.getAll();
+
+        // Then
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void testGetAll() {
+        // Given
+        final Recipe recipe1 = ObjectBuilder.buildRecipe(UUID.randomUUID(), "recipe1");
+        final Recipe recipe2 = ObjectBuilder.buildRecipe(UUID.randomUUID(), "recipe2");
+
+        final List<Recipe> recipes = new ArrayList<>();
+        recipes.add(recipe1);
+        recipes.add(recipe2);
+
+        given(this.recipes.getAll()).willReturn(recipes);
+
+        // When
+        final List<Recipe> result = this.service.getAll();
+
+        // Then
+        assertThat(result).containsExactly(recipe1, recipe2);
     }
 
     @Test

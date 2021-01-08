@@ -6,13 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
@@ -21,41 +17,11 @@ class RecipeManagerTest implements UnitTest {
     private RecipeManager service;
 
     @Mock
-    private Recipes repository;
+    private IStoreRecipes recipes;
 
     RecipeManagerTest() {
         MockitoAnnotations.initMocks(this);
-        this.service = new RecipeManager(this.repository);
-    }
-
-    @Test
-    void testGetAllNoRecipe() {
-        given(this.repository.getAll()).willReturn(Collections.emptyList());
-
-        // When
-        final List<Recipe> result = this.service.getAll();
-
-        // Then
-        assertThat(result).isEmpty();
-    }
-
-    @Test
-    void testGetAll() {
-        // Given
-        final Recipe recipe1 = ObjectBuilder.buildRecipe(UUID.randomUUID(), "recipe1");
-        final Recipe recipe2 = ObjectBuilder.buildRecipe(UUID.randomUUID(), "recipe2");
-
-        final List<Recipe> recipes = new ArrayList<>();
-        recipes.add(recipe1);
-        recipes.add(recipe2);
-
-        given(this.repository.getAll()).willReturn(recipes);
-
-        // When
-        final List<Recipe> result = this.service.getAll();
-
-        // Then
-        assertThat(result).containsExactly(recipe1, recipe2);
+        this.service = new RecipeManager(this.recipes);
     }
 
     @Test
@@ -67,7 +33,7 @@ class RecipeManagerTest implements UnitTest {
         this.service.store(recipe);
 
         // Then
-        verify(this.repository).add(recipe);
+        verify(this.recipes).add(recipe);
     }
 
     @Test
@@ -75,12 +41,12 @@ class RecipeManagerTest implements UnitTest {
         // Given
         final Recipe recipe = ObjectBuilder.buildRecipe(UUID.randomUUID(), "recipe1");
 
-        given(this.repository.get(recipe.getId())).willReturn(Optional.of(recipe));
+        given(this.recipes.get(recipe.getId())).willReturn(Optional.of(recipe));
 
         // When
         this.service.delete(recipe.getId());
 
         // Then
-        verify(this.repository).remove(recipe);
+        verify(this.recipes).remove(recipe);
     }
 }

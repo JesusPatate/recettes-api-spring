@@ -1,8 +1,8 @@
 package fr.ggautier.recettes.e2e;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import fr.ggautier.recettes.api.JsonIngredient;
-import fr.ggautier.recettes.api.JsonRecipe;
+import fr.ggautier.recettes.api.IngredientDto;
+import fr.ggautier.recettes.api.RecipeDto;
 import fr.ggautier.recettes.domain.Unit;
 import fr.ggautier.recettes.spi.db.DbIngredient;
 import fr.ggautier.recettes.spi.db.DbRecipe;
@@ -28,12 +28,12 @@ class StoreRecipe extends EndToEndTest {
     @Test
     void testStore() throws Exception {
         // Given
-        final JsonRecipe recipe = ObjectBuilder.buildJsonRecipe(
+        final RecipeDto recipe = ObjectBuilder.buildJsonRecipe(
             UUID.randomUUID(),
             "recipe1",
-            new JsonIngredient("ingredient 1", null, null),
-            new JsonIngredient("ingredient 2", 2, null),
-            new JsonIngredient("ingredient 3", 10, Unit.GRAMS.name())
+            new IngredientDto("ingredient 1", null, null),
+            new IngredientDto("ingredient 2", 2, null),
+            new IngredientDto("ingredient 3", 10, Unit.GRAMS.name())
         );
 
         // When
@@ -57,7 +57,7 @@ class StoreRecipe extends EndToEndTest {
     @Test
     void testStoreInvalidRecipe() throws Exception {
         // Given
-        final JsonRecipe recipe = ObjectBuilder.buildJsonRecipe(UUID.randomUUID(), "");
+        final RecipeDto recipe = ObjectBuilder.buildJsonRecipe(UUID.randomUUID(), "");
         final String json = new ObjectMapper().writeValueAsString(recipe);
 
         // When
@@ -73,7 +73,7 @@ class StoreRecipe extends EndToEndTest {
             .andExpect(jsonPath("$.length()").value(2));
     }
 
-    private DbRecipe toDbRecipe(final JsonRecipe recipe) {
+    private DbRecipe toDbRecipe(final RecipeDto recipe) {
         final DbIngredient[] dbIngredients = recipe.getIngredients().stream()
             .map(ingredient -> new DbIngredient(
                 ingredient.getName(),

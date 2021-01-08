@@ -1,8 +1,8 @@
 package fr.ggautier.recettes.spi;
 
 import fr.ggautier.arch.annotations.Adapter;
+import fr.ggautier.recettes.domain.IStoreRecipes;
 import fr.ggautier.recettes.domain.Recipe;
-import fr.ggautier.recettes.domain.Recipes;
 import fr.ggautier.recettes.domain.UnknownUnitException;
 import fr.ggautier.recettes.spi.db.DbRecipe;
 import fr.ggautier.recettes.spi.db.DbRecipeMapper;
@@ -22,7 +22,7 @@ import java.util.UUID;
 
 @Repository
 @Adapter
-public class RecipeRepository implements Recipes {
+public class RecipeRepository implements IStoreRecipes {
 
     private final static Logger LOG = LoggerFactory.getLogger(RecipeRepository.class);
 

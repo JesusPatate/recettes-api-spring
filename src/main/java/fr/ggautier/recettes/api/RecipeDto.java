@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @Representation
 @Data
-public class JsonRecipe {
+public class RecipeDto {
 
     private final UUID id;
 
@@ -32,13 +32,13 @@ public class JsonRecipe {
 
     @Valid
     @NotEmpty
-    private final List<JsonIngredient> ingredients = new ArrayList<>();
+    private final List<IngredientDto> ingredients = new ArrayList<>();
 
     private final String source;
 
     // Used by Jackson.
     @SuppressWarnings("unused")
-    public JsonRecipe(
+    public RecipeDto(
         @JsonProperty("id") final UUID id,
         @JsonProperty("title") final String title,
         @JsonProperty("hot") final Boolean hot,
@@ -46,7 +46,7 @@ public class JsonRecipe {
         @JsonProperty("servings") final Integer servings,
         @JsonProperty("preparationTime") final Integer preparationTime,
         @JsonProperty("cookingTime") final Integer cookingTime,
-        @JsonProperty("ingredients") final List<JsonIngredient> ingredients,
+        @JsonProperty("ingredients") final List<IngredientDto> ingredients,
         @JsonProperty("source") final String source
     ) {
         this.id = id;
@@ -63,7 +63,7 @@ public class JsonRecipe {
         }
     }
 
-    private JsonRecipe(final Builder builder) {
+    private RecipeDto(final Builder builder) {
         this.id = builder.id;
         this.title = builder.title;
         this.hot = builder.hot;
@@ -85,7 +85,7 @@ public class JsonRecipe {
         private Integer cookingTime = null;
         private Integer servings = null;
         private String source = null;
-        private List<JsonIngredient> ingredients = new ArrayList<>();
+        private List<IngredientDto> ingredients = new ArrayList<>();
 
         /**
          * Sets the identifier of the recipe.
@@ -181,7 +181,7 @@ public class JsonRecipe {
          * @param ingredient An ingredient required in the recipe
          * @return The builder
          */
-        public synchronized Builder setIngredient(final JsonIngredient ingredient) {
+        public synchronized Builder setIngredient(final IngredientDto ingredient) {
             this.ingredients.add(ingredient);
             return this;
         }
@@ -189,8 +189,8 @@ public class JsonRecipe {
         /**
          * Returns the new instance.
          */
-        public JsonRecipe build() {
-            return new JsonRecipe(this);
+        public RecipeDto build() {
+            return new RecipeDto(this);
         }
     }
 }

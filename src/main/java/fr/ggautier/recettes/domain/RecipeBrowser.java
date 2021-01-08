@@ -6,15 +6,21 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class RecipeFinder {
+public class RecipeBrowser implements ICanFindRecipes {
 
-    private final Recipes recipes;
+    private final IStoreRecipes recipes;
 
     @Autowired
-    public RecipeFinder(final Recipes recipes) {
+    public RecipeBrowser(final IStoreRecipes recipes) {
         this.recipes = recipes;
     }
 
+    @Override
+    public List<Recipe> getAll() {
+        return this.recipes.getAll();
+    }
+
+    @Override
     public List<Recipe> search(final String term) throws Exception {
         return this.recipes.search(term);
     }

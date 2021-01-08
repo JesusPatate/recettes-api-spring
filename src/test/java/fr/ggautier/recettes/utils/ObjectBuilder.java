@@ -1,7 +1,7 @@
 package fr.ggautier.recettes.utils;
 
-import fr.ggautier.recettes.api.JsonIngredient;
-import fr.ggautier.recettes.api.JsonRecipe;
+import fr.ggautier.recettes.api.IngredientDto;
+import fr.ggautier.recettes.api.RecipeDto;
 import fr.ggautier.recettes.domain.Ingredient;
 import fr.ggautier.recettes.domain.Recipe;
 import fr.ggautier.recettes.spi.db.DbIngredient;
@@ -44,8 +44,8 @@ public final class ObjectBuilder {
         return builder.build();
     }
 
-    public static JsonRecipe buildJsonRecipe(UUID id, String title, JsonIngredient... ingredients) {
-        final JsonRecipe.Builder builder = new JsonRecipe.Builder()
+    public static RecipeDto buildJsonRecipe(UUID id, String title, IngredientDto... ingredients) {
+        final RecipeDto.Builder builder = new RecipeDto.Builder()
             .setId(id)
             .setTitle(title)
             .isHot(true)

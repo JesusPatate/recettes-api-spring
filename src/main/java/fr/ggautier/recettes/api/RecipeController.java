@@ -1,10 +1,7 @@
 package fr.ggautier.recettes.api;
 
-import fr.ggautier.arch.annotations.Adapter;
 import fr.ggautier.arch.annotations.rest.Resource;
 import fr.ggautier.recettes.domain.Recipe;
-import fr.ggautier.recettes.domain.RecipeFinder;
-import fr.ggautier.recettes.domain.RecipeManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,7 +20,6 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Resource
-@Adapter
 @RestController
 @RequestMapping(RecipeController.ROUTE)
 @CrossOrigin
@@ -31,46 +27,35 @@ public class RecipeController {
 
     static final String ROUTE = "/recipes";
 
-    private final RecipeManager manager;
-
-    private final RecipeFinder finder;
-
-    private final JsonRecipeMapper jsonRecipeMapper;
+    private final RecipesApiAdapter adapter;
 
     @Autowired
-    public RecipeController(
-        final RecipeManager manager,
-        final RecipeFinder finder,
-        final JsonRecipeMapper jsonRecipeMapper
-    ) {
-        this.manager = manager;
-        this.finder = finder;
-        this.jsonRecipeMapper = jsonRecipeMapper;
+    public RecipeController(final RecipesApiAdapter adapter) {
+        this.adapter = adapter;
     }
 
     @GetMapping
     public List<Recipe> getAll() {
-        return this.manager.getAll();
+        return this.adapter.getAll();
     }
 
     @PutMapping
-    public Recipe store(@RequestBody @Valid final JsonRecipe json) throws Exception {
-        final Recipe recipe = this.jsonRecipeMapper.toRecipe(json);
-        this.manager.store(recipe);
+    public RecipeDto store(@RequestBody @Valid final RecipeDto recipe) throws Exception {
+        this.adapter.store(recipe);
         return recipe;
     }
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable("id") final UUID id) throws RecipeNotFoundException {
         try {
-            this.manager.delete(id);
+            this.adapter.delete(id);
         } catch (final NoSuchElementException exception) {
             throw new RecipeNotFoundException();
         }
     }
 
     @PostMapping("/search")
-    public List<Recipe> search(@RequestParam(name = "value") final String term) throws Exception {
-        return this.finder.search(term);
+    public List<RecipeDto> search(@RequestParam(name = "value") final String term) throws Exception {
+        return this.adapter.search(term);
     }
 }

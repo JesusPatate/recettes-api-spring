@@ -1,16 +1,13 @@
 package fr.ggautier.recettes.api;
 
+import fr.ggautier.recettes.domain.ICanFindRecipes;
+import fr.ggautier.recettes.domain.IManageRecipes;
 import fr.ggautier.recettes.domain.Recipe;
-import fr.ggautier.recettes.domain.RecipeFinder;
-import fr.ggautier.recettes.domain.RecipeManager;
-import fr.ggautier.recettes.utils.IntegrationTest;
 import fr.ggautier.recettes.utils.ObjectBuilder;
+import fr.ggautier.recettes.utils.UnitTest;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,26 +18,24 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
-@WebMvcTest
-class RecipeControllerTest implements IntegrationTest {
+class RecipeControllerTest implements UnitTest {
 
-    @TestConfiguration
-    static class RecipeControllerTestContextConfiguration {
+    private final RecipeController controller;
 
-        @Bean
-        public JsonRecipeMapper jsonRecipeMapper() {
-            return new JsonRecipeMapper();
-        }
+    @Mock
+    private IManageRecipes managementService;
+
+    @Mock
+    private ICanFindRecipes browsingService;
+
+    RecipeControllerTest() {
+        MockitoAnnotations.initMocks(this);
+
+        final JsonRecipeMapper mapper = new JsonRecipeMapper();
+        this.controller = new RecipeController(
+            new RecipesApiAdapter(this.managementService, this.browsingService, mapper)
+        );
     }
-
-    @Autowired
-    private RecipeController controller;
-
-    @MockBean
-    private RecipeManager manager;
-
-    @MockBean
-    private RecipeFinder finder;
 
     /**
      * When no recipe is saved, {@link RecipeController} should return an empty list to GET requests to /recipes.
@@ -48,7 +43,7 @@ class RecipeControllerTest implements IntegrationTest {
     @Test
     void testGetAllNoRecipe() {
         // Given
-        given(this.manager.getAll()).willReturn(Collections.emptyList());
+        given(this.browsingService.getAll()).willReturn(Collections.emptyList());
 
         // When
         final List<Recipe> recipes = this.controller.getAll();
@@ -67,7 +62,7 @@ class RecipeControllerTest implements IntegrationTest {
         recipes.add(recipe1);
         recipes.add(recipe2);
 
-        given(this.manager.getAll()).willReturn(recipes);
+        given(this.browsingService.getAll()).willReturn(recipes);
 
         // When
         final List<Recipe> output = this.controller.getAll();
@@ -80,26 +75,25 @@ class RecipeControllerTest implements IntegrationTest {
     void testStore() throws Exception {
         // Given
         final UUID id = UUID.randomUUID();
-        final JsonRecipe json = ObjectBuilder.buildJsonRecipe(id, "recipe1");
+        final RecipeDto json = ObjectBuilder.buildJsonRecipe(id, "recipe1");
 
         // When
-        final Recipe output = this.controller.store(json);
+        final RecipeDto output = this.controller.store(json);
 
         // Then
-        final Recipe expected = ObjectBuilder.buildRecipe(id, json.getTitle());
-        assertThat(output).isEqualTo(expected);
+        assertThat(output).isEqualTo(json);
     }
 
     @Test
     void testDelete() throws Exception {
         // Given
-        final JsonRecipe json = ObjectBuilder.buildJsonRecipe(UUID.randomUUID(), "recipe1");
+        final RecipeDto json = ObjectBuilder.buildJsonRecipe(UUID.randomUUID(), "recipe1");
 
         // When
         this.controller.delete(json.getId());
 
         // Then
-        verify(this.manager).delete(json.getId());
+        verify(this.managementService).delete(json.getId());
     }
 
     @Test
@@ -113,23 +107,25 @@ class RecipeControllerTest implements IntegrationTest {
         recipes.add(recipe2);
 
         final String term = "foo";
-        given(this.finder.search(term)).willReturn(recipes);
+        given(this.browsingService.search(term)).willReturn(recipes);
 
         // When
-        final List<Recipe> output = this.controller.search(term);
+        final List<RecipeDto> output = this.controller.search(term);
 
         // Then
-        assertThat(output).containsExactly(recipe1, recipe2);
+        final RecipeDto expected1 = ObjectBuilder.buildJsonRecipe(recipe1.getId(), recipe1.getTitle());
+        final RecipeDto expected2 = ObjectBuilder.buildJsonRecipe(recipe2.getId(), recipe2.getTitle());
+        assertThat(output).containsExactly(expected1, expected2);
     }
 
     @Test
     void testSearchNoResult() throws Exception {
         // Given
         final String term = "foo";
-        given(this.finder.search(term)).willReturn(Collections.emptyList());
+        given(this.browsingService.search(term)).willReturn(Collections.emptyList());
 
         // When
-        final List<Recipe> output = this.controller.search(term);
+        final List<RecipeDto> output = this.controller.search(term);
 
         // Then
         assertThat(output).isEmpty();

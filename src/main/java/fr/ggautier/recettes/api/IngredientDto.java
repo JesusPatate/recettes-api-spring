@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Representation
 @EqualsAndHashCode
-public class JsonIngredient {
+public class IngredientDto {
 
     @NotBlank
     @JsonProperty
@@ -24,7 +24,7 @@ public class JsonIngredient {
     @JsonProperty
     private final String unit;
 
-    public JsonIngredient(
+    public IngredientDto(
         @JsonProperty("name") final String name,
         @JsonProperty("amount") final Integer amount,
         @JsonProperty("unit") final String unit

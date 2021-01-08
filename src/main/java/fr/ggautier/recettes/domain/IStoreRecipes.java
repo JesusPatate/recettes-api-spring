@@ -1,5 +1,6 @@
 package fr.ggautier.recettes.domain;
 
+import fr.ggautier.arch.annotations.Port;
 import fr.ggautier.arch.annotations.Repository;
 
 import java.util.List;
@@ -7,7 +8,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface Recipes {
+@Port(type = Port.Type.SPI)
+public interface IStoreRecipes {
 
     List<Recipe> getAll();
 
