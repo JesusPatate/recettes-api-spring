@@ -53,14 +53,8 @@ public class RecipeController {
         return this.manager.getAll();
     }
 
-    @PutMapping("/{id}")
-    public Recipe store(@PathVariable("id") final UUID id, @RequestBody @Valid final JsonRecipe json)
-        throws Exception {
-
-        if (!id.equals(json.getId())) {
-            throw new NotMatchingIdentifiersException();
-        }
-
+    @PutMapping
+    public Recipe store(@RequestBody @Valid final JsonRecipe json) throws Exception {
         final Recipe recipe = this.jsonRecipeMapper.toRecipe(json);
         this.manager.store(recipe);
         return recipe;

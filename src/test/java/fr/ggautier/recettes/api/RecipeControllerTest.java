@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
@@ -84,25 +83,11 @@ class RecipeControllerTest implements IntegrationTest {
         final JsonRecipe json = ObjectBuilder.buildJsonRecipe(id, "recipe1");
 
         // When
-        final Recipe output = this.controller.store(id, json);
+        final Recipe output = this.controller.store(json);
 
         // Then
         final Recipe expected = ObjectBuilder.buildRecipe(id, json.getTitle());
         assertThat(output).isEqualTo(expected);
-    }
-
-    @Test
-    void testStoreNotMatchingIds() {
-        // Given
-        final JsonRecipe json = ObjectBuilder.buildJsonRecipe(UUID.randomUUID(), "recipe1");
-
-        // When
-        final Throwable throwable = catchThrowable(() -> this.controller.store(UUID.randomUUID(), json));
-
-        // Then
-        assertThat(throwable).isNotNull();
-        assertThat(throwable).isInstanceOf(NotMatchingIdentifiersException.class);
-        assertThat(throwable).hasMessage(NotMatchingIdentifiersException.MESSAGE);
     }
 
     @Test

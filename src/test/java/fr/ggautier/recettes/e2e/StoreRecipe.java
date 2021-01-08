@@ -3,16 +3,12 @@ package fr.ggautier.recettes.e2e;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.ggautier.recettes.api.JsonIngredient;
 import fr.ggautier.recettes.api.JsonRecipe;
-import fr.ggautier.recettes.domain.Recipe;
 import fr.ggautier.recettes.domain.Unit;
-import fr.ggautier.recettes.domain.UnknownUnitException;
 import fr.ggautier.recettes.spi.db.DbIngredient;
 import fr.ggautier.recettes.spi.db.DbRecipe;
-import fr.ggautier.recettes.spi.db.DbRecipeMapper;
 import fr.ggautier.recettes.utils.EndToEndTest;
 import fr.ggautier.recettes.utils.ObjectBuilder;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -29,9 +25,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 class StoreRecipe extends EndToEndTest {
 
-    @Autowired
-    private DbRecipeMapper mapper;
-
     @Test
     void testStore() throws Exception {
         // Given
@@ -45,8 +38,8 @@ class StoreRecipe extends EndToEndTest {
 
         // When
         final String json = new ObjectMapper().writeValueAsString(recipe);
-        final ResultActions actions = mvc.perform(
-            MockMvcRequestBuilders.put("/recipes/{id}", recipe.getId())
+        final ResultActions actions = this.mvc.perform(
+            MockMvcRequestBuilders.put("/recipes")
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON));
 
@@ -56,17 +49,9 @@ class StoreRecipe extends EndToEndTest {
             .andExpect(jsonPath("$.title").value(recipe.getTitle()));
 
         final List<DbRecipe> recipes = this.getAllRecipes();
-        final DbRecipe expected = toDbRecipe(recipe);
+        final DbRecipe expected = this.toDbRecipe(recipe);
 
         assertThat(recipes).containsExactly(expected);
-    }
-
-    private Recipe toRecipe(DbRecipe dbModel) {
-        try {
-            return this.mapper.fromDbModel(dbModel);
-        } catch (UnknownUnitException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Test
@@ -76,8 +61,8 @@ class StoreRecipe extends EndToEndTest {
         final String json = new ObjectMapper().writeValueAsString(recipe);
 
         // When
-        final ResultActions actions = mvc.perform(
-            MockMvcRequestBuilders.put("/recipes/{id}", recipe.getId())
+        final ResultActions actions = this.mvc.perform(
+            MockMvcRequestBuilders.put("/recipes")
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON));
 
@@ -88,7 +73,7 @@ class StoreRecipe extends EndToEndTest {
             .andExpect(jsonPath("$.length()").value(2));
     }
 
-    private DbRecipe toDbRecipe(JsonRecipe recipe) {
+    private DbRecipe toDbRecipe(final JsonRecipe recipe) {
         final DbIngredient[] dbIngredients = recipe.getIngredients().stream()
             .map(ingredient -> new DbIngredient(
                 ingredient.getName(),
