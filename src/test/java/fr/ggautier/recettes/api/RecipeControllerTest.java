@@ -31,7 +31,7 @@ class RecipeControllerTest implements UnitTest {
     RecipeControllerTest() {
         MockitoAnnotations.initMocks(this);
 
-        final JsonRecipeMapper mapper = new JsonRecipeMapper();
+        final RecipeMapper mapper = new RecipeMapper();
         this.controller = new RecipeController(
             new RecipesApiAdapter(this.managementService, this.browsingService, mapper)
         );

@@ -20,17 +20,17 @@ public class RecipesApiAdapter {
 
     private final ICanFindRecipes browsingService;
 
-    private final JsonRecipeMapper jsonRecipeMapper;
+    private final RecipeMapper mapper;
 
     @Autowired
     public RecipesApiAdapter(
         final IManageRecipes managementService,
         final ICanFindRecipes browsingService,
-        final JsonRecipeMapper jsonRecipeMapper
+        final RecipeMapper mapper
     ) {
         this.managementService = managementService;
         this.browsingService = browsingService;
-        this.jsonRecipeMapper = jsonRecipeMapper;
+        this.mapper = mapper;
     }
 
     List<Recipe> getAll() {
@@ -40,14 +40,14 @@ public class RecipesApiAdapter {
     List<RecipeDto> search(final String term) throws Exception {
         final List<Recipe> recipes = this.browsingService.search(term);
         final List<RecipeDto> dtos = recipes.stream()
-            .map(this.jsonRecipeMapper::fromRecipe)
+            .map(this.mapper::fromRecipe)
             .collect(Collectors.toList());
 
         return dtos;
     }
 
     Recipe store(final RecipeDto dto) throws Exception {
-        final Recipe recipe = this.jsonRecipeMapper.toRecipe(dto);
+        final Recipe recipe = this.mapper.toRecipe(dto);
         this.managementService.store(recipe);
         return recipe;
     }

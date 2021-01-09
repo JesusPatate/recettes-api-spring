@@ -6,7 +6,7 @@ import fr.ggautier.recettes.domain.UnknownUnitException;
 import org.springframework.stereotype.Component;
 
 @Component
-class JsonRecipeMapper {
+class RecipeMapper {
 
     Recipe toRecipe(final RecipeDto representation) throws UnknownUnitException {
         final Recipe.Builder builder = new Recipe.Builder()
