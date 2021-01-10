@@ -12,6 +12,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -69,6 +70,23 @@ class RecipeControllerTest implements UnitTest {
 
         // Then
         assertThat(output).containsExactly(recipe1, recipe2);
+    }
+
+    @Test
+    void testGet() {
+        // Given
+        final UUID id = UUID.randomUUID();
+        final String title = UUID.randomUUID().toString();
+        final Recipe recipe = ObjectBuilder.buildRecipe(id, title);
+
+        given(this.browsingService.get(id)).willReturn(Optional.of(recipe));
+
+        // When
+        final RecipeDto output = this.controller.get(id);
+
+        // Then
+        final RecipeDto expected = ObjectBuilder.buildJsonRecipe(id, title);
+        assertThat(output).isEqualTo(expected);
     }
 
     @Test

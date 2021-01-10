@@ -13,6 +13,8 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -21,6 +23,8 @@ import java.util.List;
 
 @Component
 public class EsClient {
+
+    private final static Logger LOG = LoggerFactory.getLogger(EsClient.class);
 
     public void index(final EsRecipe recipe) throws IOException {
         final RestHighLevelClient client = new RestHighLevelClient(

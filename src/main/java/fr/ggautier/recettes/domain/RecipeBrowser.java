@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class RecipeBrowser implements ICanFindRecipes {
@@ -18,6 +20,11 @@ public class RecipeBrowser implements ICanFindRecipes {
     @Override
     public List<Recipe> getAll() {
         return this.recipes.getAll();
+    }
+
+    @Override
+    public Optional<Recipe> get(final UUID id) {
+        return Optional.empty();
     }
 
     @Override

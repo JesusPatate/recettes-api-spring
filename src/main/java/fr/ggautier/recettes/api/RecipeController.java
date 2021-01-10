@@ -39,6 +39,11 @@ public class RecipeController {
         return this.adapter.getAll();
     }
 
+    @GetMapping("/{id}")
+    public RecipeDto get(final UUID id) {
+        return this.adapter.get(id).orElse(null);
+    }
+
     @PutMapping
     public RecipeDto store(@RequestBody @Valid final RecipeDto recipe) throws Exception {
         this.adapter.store(recipe);

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -35,6 +36,11 @@ public class RecipesApiAdapter {
 
     List<Recipe> getAll() {
         return this.browsingService.getAll();
+    }
+
+    Optional<RecipeDto> get(final UUID id) {
+        return this.browsingService.get(id)
+            .map(this.mapper::fromRecipe);
     }
 
     List<RecipeDto> search(final String term) throws Exception {
