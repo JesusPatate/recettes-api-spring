@@ -38,24 +38,30 @@ public class RecipesApiAdapter {
         return this.browsingService.getAll();
     }
 
-    Optional<RecipeDto> get(final UUID id) {
+    Optional<OutputRecipeDto> get(final UUID id) {
         return this.browsingService.get(id)
             .map(this.mapper::fromRecipe);
     }
 
-    List<RecipeDto> search(final String term) throws Exception {
+    List<OutputRecipeDto> search(final String term) throws Exception {
         final List<Recipe> recipes = this.browsingService.search(term);
-        final List<RecipeDto> dtos = recipes.stream()
+        final List<OutputRecipeDto> dtos = recipes.stream()
             .map(this.mapper::fromRecipe)
             .collect(Collectors.toList());
 
         return dtos;
     }
 
-    Recipe store(final RecipeDto dto) throws Exception {
+    OutputRecipeDto store(final InputRecipeDto dto) throws Exception {
         final Recipe recipe = this.mapper.toRecipe(dto);
         this.managementService.store(recipe);
-        return recipe;
+        return this.mapper.fromRecipe(recipe);
+    }
+
+    OutputRecipeDto update(final UUID id, final InputRecipeDto dto) throws Exception {
+        final Recipe recipe = this.mapper.toRecipe(dto, id);
+        this.managementService.store(recipe);
+        return this.mapper.fromRecipe(recipe);
     }
 
     void delete(final UUID recipeId) throws NoSuchElementException {

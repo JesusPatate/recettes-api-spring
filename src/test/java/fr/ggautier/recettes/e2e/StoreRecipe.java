@@ -2,7 +2,7 @@ package fr.ggautier.recettes.e2e;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.ggautier.recettes.api.IngredientDto;
-import fr.ggautier.recettes.api.RecipeDto;
+import fr.ggautier.recettes.api.OutputRecipeDto;
 import fr.ggautier.recettes.domain.Unit;
 import fr.ggautier.recettes.spi.db.DbIngredient;
 import fr.ggautier.recettes.spi.db.DbRecipe;
@@ -28,7 +28,7 @@ class StoreRecipe extends EndToEndTest {
     @Test
     void testStore() throws Exception {
         // Given
-        final RecipeDto recipe = ObjectBuilder.buildJsonRecipe(
+        final OutputRecipeDto recipe = ObjectBuilder.buildJsonRecipe(
             UUID.randomUUID(),
             "recipe1",
             new IngredientDto("ingredient 1", null, null),
@@ -57,7 +57,7 @@ class StoreRecipe extends EndToEndTest {
     @Test
     void testStoreInvalidRecipe() throws Exception {
         // Given
-        final RecipeDto recipe = ObjectBuilder.buildJsonRecipe(UUID.randomUUID(), "");
+        final OutputRecipeDto recipe = ObjectBuilder.buildJsonRecipe(UUID.randomUUID(), "");
         final String json = new ObjectMapper().writeValueAsString(recipe);
 
         // When
@@ -73,7 +73,7 @@ class StoreRecipe extends EndToEndTest {
             .andExpect(jsonPath("$.length()").value(2));
     }
 
-    private DbRecipe toDbRecipe(final RecipeDto recipe) {
+    private DbRecipe toDbRecipe(final OutputRecipeDto recipe) {
         final DbIngredient[] dbIngredients = recipe.getIngredients().stream()
             .map(ingredient -> new DbIngredient(
                 ingredient.getName(),

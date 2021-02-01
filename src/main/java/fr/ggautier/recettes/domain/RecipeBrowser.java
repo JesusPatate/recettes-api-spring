@@ -24,7 +24,7 @@ public class RecipeBrowser implements ICanFindRecipes {
 
     @Override
     public Optional<Recipe> get(final UUID id) {
-        return Optional.empty();
+        return this.recipes.get(id);
     }
 
     @Override

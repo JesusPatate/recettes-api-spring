@@ -82,10 +82,10 @@ class RecipeControllerTest implements UnitTest {
         given(this.browsingService.get(id)).willReturn(Optional.of(recipe));
 
         // When
-        final RecipeDto output = this.controller.get(id);
+        final OutputRecipeDto output = this.controller.get(id);
 
         // Then
-        final RecipeDto expected = ObjectBuilder.buildJsonRecipe(id, title);
+        final OutputRecipeDto expected = ObjectBuilder.buildJsonRecipe(id, title);
         assertThat(output).isEqualTo(expected);
     }
 
@@ -93,10 +93,10 @@ class RecipeControllerTest implements UnitTest {
     void testStore() throws Exception {
         // Given
         final UUID id = UUID.randomUUID();
-        final RecipeDto json = ObjectBuilder.buildJsonRecipe(id, "recipe1");
+        final OutputRecipeDto json = ObjectBuilder.buildJsonRecipe(id, "recipe1");
 
         // When
-        final RecipeDto output = this.controller.store(json);
+        final OutputRecipeDto output = this.controller.store(json);
 
         // Then
         assertThat(output).isEqualTo(json);
@@ -105,7 +105,7 @@ class RecipeControllerTest implements UnitTest {
     @Test
     void testDelete() throws Exception {
         // Given
-        final RecipeDto json = ObjectBuilder.buildJsonRecipe(UUID.randomUUID(), "recipe1");
+        final OutputRecipeDto json = ObjectBuilder.buildJsonRecipe(UUID.randomUUID(), "recipe1");
 
         // When
         this.controller.delete(json.getId());
@@ -128,11 +128,11 @@ class RecipeControllerTest implements UnitTest {
         given(this.browsingService.search(term)).willReturn(recipes);
 
         // When
-        final List<RecipeDto> output = this.controller.search(term);
+        final List<OutputRecipeDto> output = this.controller.search(term);
 
         // Then
-        final RecipeDto expected1 = ObjectBuilder.buildJsonRecipe(recipe1.getId(), recipe1.getTitle());
-        final RecipeDto expected2 = ObjectBuilder.buildJsonRecipe(recipe2.getId(), recipe2.getTitle());
+        final OutputRecipeDto expected1 = ObjectBuilder.buildJsonRecipe(recipe1.getId(), recipe1.getTitle());
+        final OutputRecipeDto expected2 = ObjectBuilder.buildJsonRecipe(recipe2.getId(), recipe2.getTitle());
         assertThat(output).containsExactly(expected1, expected2);
     }
 
@@ -143,7 +143,7 @@ class RecipeControllerTest implements UnitTest {
         given(this.browsingService.search(term)).willReturn(Collections.emptyList());
 
         // When
-        final List<RecipeDto> output = this.controller.search(term);
+        final List<OutputRecipeDto> output = this.controller.search(term);
 
         // Then
         assertThat(output).isEmpty();

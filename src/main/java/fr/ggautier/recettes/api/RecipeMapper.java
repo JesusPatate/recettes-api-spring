@@ -5,30 +5,37 @@ import fr.ggautier.recettes.domain.Recipe;
 import fr.ggautier.recettes.domain.UnknownUnitException;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Component
 class RecipeMapper {
 
-    Recipe toRecipe(final RecipeDto representation) throws UnknownUnitException {
-        final Recipe.Builder builder = new Recipe.Builder()
-            .setId(representation.getId())
-            .setTitle(representation.getTitle())
-            .isADessert(representation.getDessert())
-            .isHot(representation.getHot())
-            .setPreparationTime(representation.getPreparationTime())
-            .setCookingTime(representation.getCookingTime())
-            .setServings(representation.getServings())
-            .setSource(representation.getSource());
+    Recipe toRecipe(final InputRecipeDto recipeDto) throws UnknownUnitException {
+        final UUID id = UUID.randomUUID();
+        return this.toRecipe(recipeDto, id);
+    }
 
-        for (final IngredientDto ingredientRepr : representation.getIngredients()) {
-            final Ingredient ingredient = this.toIngredient(ingredientRepr);
+    Recipe toRecipe(final InputRecipeDto recipeDto, final UUID id) throws UnknownUnitException {
+        final Recipe.Builder builder = new Recipe.Builder()
+            .setId(id)
+            .setTitle(recipeDto.getTitle())
+            .isADessert(recipeDto.getDessert())
+            .isHot(recipeDto.getHot())
+            .setPreparationTime(recipeDto.getPreparationTime())
+            .setCookingTime(recipeDto.getCookingTime())
+            .setServings(recipeDto.getServings())
+            .setSource(recipeDto.getSource());
+
+        for (final IngredientDto ingredientDto : recipeDto.getIngredients()) {
+            final Ingredient ingredient = this.toIngredient(ingredientDto);
             builder.setIngredient(ingredient);
         }
 
         return builder.build();
     }
 
-    RecipeDto fromRecipe(final Recipe recipe) {
-        final RecipeDto.Builder builder = new RecipeDto.Builder()
+    OutputRecipeDto fromRecipe(final Recipe recipe) {
+        final OutputRecipeDto.Builder builder = new OutputRecipeDto.Builder()
             .setId(recipe.getId())
             .setTitle(recipe.getTitle())
             .isADessert(recipe.getDessert())
@@ -46,10 +53,10 @@ class RecipeMapper {
         return builder.build();
     }
 
-    private Ingredient toIngredient(final IngredientDto representation) throws UnknownUnitException {
-        final String unit = representation.getUnit().orElse(null);
-        final Integer amount = representation.getAmount().orElse(null);
-        return new Ingredient(representation.getName(), amount, unit);
+    private Ingredient toIngredient(final IngredientDto dto) throws UnknownUnitException {
+        final String unit = dto.getUnit().orElse(null);
+        final Integer amount = dto.getAmount().orElse(null);
+        return new Ingredient(dto.getName(), amount, unit);
     }
 
     private IngredientDto fromIngredient(final Ingredient ingredient) {

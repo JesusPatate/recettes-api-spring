@@ -9,6 +9,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,17 +32,6 @@ class RecipeBrowserTest implements UnitTest {
     }
 
     @Test
-    void testGetAllNoRecipe() {
-        given(this.recipes.getAll()).willReturn(Collections.emptyList());
-
-        // When
-        final List<Recipe> result = this.service.getAll();
-
-        // Then
-        assertThat(result).isEmpty();
-    }
-
-    @Test
     void testGetAll() {
         // Given
         final Recipe recipe1 = ObjectBuilder.buildRecipe(UUID.randomUUID(), "recipe1");
@@ -58,6 +48,43 @@ class RecipeBrowserTest implements UnitTest {
 
         // Then
         assertThat(result).containsExactly(recipe1, recipe2);
+    }
+
+    @Test
+    void testGetAllNoRecipe() {
+        given(this.recipes.getAll()).willReturn(Collections.emptyList());
+
+        // When
+        final List<Recipe> result = this.service.getAll();
+
+        // Then
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void testGet() {
+        // Given
+        final Recipe recipe = ObjectBuilder.buildRecipe(UUID.randomUUID(), "recipe");
+
+        given(this.recipes.get(recipe.getId())).willReturn(Optional.of(recipe));
+
+        // When
+        final Optional<Recipe> result = this.service.get(recipe.getId());
+
+        // Then
+        assertThat(result).contains(recipe);
+    }
+
+    @Test
+    void testGetNoRecipe() {
+        final UUID id = UUID.randomUUID();
+        given(this.recipes.get(id)).willReturn(Optional.empty());
+
+        // When
+        final Optional<Recipe> result = this.service.get(id);
+
+        // Then
+        assertThat(result).isEmpty();
     }
 
     @Test

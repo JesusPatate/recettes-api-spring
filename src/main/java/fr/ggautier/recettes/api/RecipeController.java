@@ -22,7 +22,7 @@ import java.util.UUID;
 @Resource
 @RestController
 @RequestMapping(RecipeController.ROUTE)
-@CrossOrigin
+@CrossOrigin("http://localhost:4200")
 public class RecipeController {
 
     static final String ROUTE = "/recipes";
@@ -40,14 +40,23 @@ public class RecipeController {
     }
 
     @GetMapping("/{id}")
-    public RecipeDto get(final UUID id) {
+    public OutputRecipeDto get(@PathVariable("id") final UUID id) {
         return this.adapter.get(id).orElse(null);
     }
 
-    @PutMapping
-    public RecipeDto store(@RequestBody @Valid final RecipeDto recipe) throws Exception {
-        this.adapter.store(recipe);
-        return recipe;
+    @PostMapping
+    public OutputRecipeDto store(@RequestBody @Valid final InputRecipeDto recipe) throws Exception {
+        final OutputRecipeDto outputDto = this.adapter.store(recipe);
+        return outputDto;
+    }
+
+    @PutMapping("/{id}")
+    public OutputRecipeDto update(
+        @PathVariable("id") final UUID id,
+        @RequestBody @Valid final InputRecipeDto recipe
+    ) throws Exception {
+        final OutputRecipeDto outputDto = this.adapter.update(id, recipe);
+        return outputDto;
     }
 
     @DeleteMapping("/{id}")
@@ -60,7 +69,7 @@ public class RecipeController {
     }
 
     @PostMapping("/search")
-    public List<RecipeDto> search(@RequestParam(name = "value") final String term) throws Exception {
+    public List<OutputRecipeDto> search(@RequestParam(name = "value") final String term) throws Exception {
         return this.adapter.search(term);
     }
 }

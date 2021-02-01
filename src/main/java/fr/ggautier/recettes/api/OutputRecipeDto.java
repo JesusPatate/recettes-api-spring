@@ -2,43 +2,21 @@ package fr.ggautier.recettes.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.ggautier.arch.annotations.rest.Representation;
-import lombok.Data;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Representation
-@Data
-public class RecipeDto {
+public class OutputRecipeDto {
 
     private final UUID id;
 
-    @NotBlank
-    private final String title;
-
-    private final Boolean hot;
-
-    private final Boolean dessert;
-
-    private final Integer servings;
-
-    private final Integer preparationTime;
-
-    private final Integer cookingTime;
-
-    @Valid
-    @NotEmpty
-    private final List<IngredientDto> ingredients = new ArrayList<>();
-
-    private final String source;
+    private final InputRecipeDto recipe;
 
     // Used by Jackson.
     @SuppressWarnings("unused")
-    public RecipeDto(
+    public OutputRecipeDto(
         @JsonProperty("id") final UUID id,
         @JsonProperty("title") final String title,
         @JsonProperty("hot") final Boolean hot,
@@ -50,29 +28,66 @@ public class RecipeDto {
         @JsonProperty("source") final String source
     ) {
         this.id = id;
-        this.title = title;
-        this.hot = hot;
-        this.dessert = dessert;
-        this.servings = servings;
-        this.preparationTime = preparationTime;
-        this.cookingTime = cookingTime;
-        this.source = source;
-
-        if (ingredients != null) {
-            this.ingredients.addAll(ingredients);
-        }
+        this.recipe = new InputRecipeDto(
+            title,
+            hot,
+            dessert,
+            servings,
+            preparationTime,
+            cookingTime,
+            ingredients,
+            source
+        );
     }
 
-    private RecipeDto(final Builder builder) {
+    private OutputRecipeDto(final Builder builder) {
         this.id = builder.id;
-        this.title = builder.title;
-        this.hot = builder.hot;
-        this.dessert = builder.dessert;
-        this.preparationTime = builder.preparationTime;
-        this.cookingTime = builder.cookingTime;
-        this.servings = builder.servings;
-        this.source = builder.source;
-        this.ingredients.addAll(builder.ingredients);
+        this.recipe = new InputRecipeDto(
+            builder.title,
+            builder.hot,
+            builder.dessert,
+            builder.servings,
+            builder.preparationTime,
+            builder.cookingTime,
+            builder.ingredients,
+            builder.source
+        );
+    }
+
+    public UUID getId() {
+        return this.id;
+    }
+
+    public String getTitle() {
+        return this.recipe.getTitle();
+    }
+
+    public boolean getHot() {
+        return this.recipe.getHot();
+    }
+
+    public boolean getDessert() {
+        return this.recipe.getDessert();
+    }
+
+    public int getServings() {
+        return this.recipe.getServings();
+    }
+
+    public int getPreparationTime() {
+        return this.recipe.getPreparationTime();
+    }
+
+    public int getCookingTime() {
+        return this.recipe.getCookingTime();
+    }
+
+    public String getSource() {
+        return this.recipe.getSource();
+    }
+
+    public List<IngredientDto> getIngredients() {
+        return this.recipe.getIngredients();
     }
 
     public static class Builder {
@@ -85,7 +100,7 @@ public class RecipeDto {
         private Integer cookingTime = null;
         private Integer servings = null;
         private String source = null;
-        private List<IngredientDto> ingredients = new ArrayList<>();
+        private final List<IngredientDto> ingredients = new ArrayList<>();
 
         /**
          * Sets the identifier of the recipe.
@@ -189,8 +204,8 @@ public class RecipeDto {
         /**
          * Returns the new instance.
          */
-        public RecipeDto build() {
-            return new RecipeDto(this);
+        public OutputRecipeDto build() {
+            return new OutputRecipeDto(this);
         }
     }
 }
