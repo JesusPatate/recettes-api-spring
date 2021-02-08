@@ -94,6 +94,8 @@ public class RecipeRepository implements IStoreRecipes {
     public void remove(final Recipe recipe) {
         final DbRecipe dbModel = dbModelMapper.toDbModel(recipe);
         this.dao.delete(dbModel);
+
+        // TODO: remove recipe from ES
     }
 
     /**
