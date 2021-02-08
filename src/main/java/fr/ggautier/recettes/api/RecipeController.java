@@ -22,7 +22,7 @@ import java.util.UUID;
 @Resource
 @RestController
 @RequestMapping(RecipeController.ROUTE)
-@CrossOrigin("http://localhost:4200")
+@CrossOrigin
 public class RecipeController {
 
     static final String ROUTE = "/recipes";
