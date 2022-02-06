@@ -2,7 +2,7 @@ package fr.ggautier.recettes.e2e;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.ggautier.recettes.api.IngredientDto;
-import fr.ggautier.recettes.api.OutputRecipeDto;
+import fr.ggautier.recettes.api.InputRecipeDto;
 import fr.ggautier.recettes.domain.Unit;
 import fr.ggautier.recettes.spi.db.DbIngredient;
 import fr.ggautier.recettes.spi.db.DbRecipe;
@@ -28,8 +28,8 @@ class StoreRecipe extends EndToEndTest {
     @Test
     void testStore() throws Exception {
         // Given
-        final OutputRecipeDto recipe = ObjectBuilder.buildJsonRecipe(
-            UUID.randomUUID(),
+        final UUID id = UUID.randomUUID();
+        final InputRecipeDto inputDto = ObjectBuilder.buildInputJsonRecipe(
             "recipe1",
             new IngredientDto("ingredient 1", null, null),
             new IngredientDto("ingredient 2", 2, null),
@@ -37,19 +37,19 @@ class StoreRecipe extends EndToEndTest {
         );
 
         // When
-        final String json = new ObjectMapper().writeValueAsString(recipe);
+        final String json = new ObjectMapper().writeValueAsString(inputDto);
         final ResultActions actions = this.mvc.perform(
-            MockMvcRequestBuilders.put("/recipes")
+            MockMvcRequestBuilders.put("/recipes/" + id)
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON));
 
         // Then
         actions.andExpect(MockMvcResultMatchers.status().isOk())
-            .andExpect(jsonPath("$.id").value(recipe.getId().toString()))
-            .andExpect(jsonPath("$.title").value(recipe.getTitle()));
+            .andExpect(jsonPath("$.id").value(id.toString()))
+            .andExpect(jsonPath("$.title").value(inputDto.getTitle()));
 
         final List<DbRecipe> recipes = this.getAllRecipes();
-        final DbRecipe expected = this.toDbRecipe(recipe);
+        final DbRecipe expected = this.toDbRecipe(id, inputDto);
 
         assertThat(recipes).containsExactly(expected);
     }
@@ -57,12 +57,13 @@ class StoreRecipe extends EndToEndTest {
     @Test
     void testStoreInvalidRecipe() throws Exception {
         // Given
-        final OutputRecipeDto recipe = ObjectBuilder.buildJsonRecipe(UUID.randomUUID(), "");
-        final String json = new ObjectMapper().writeValueAsString(recipe);
+        final UUID id = UUID.randomUUID();
+        final InputRecipeDto inputDto = ObjectBuilder.buildInputJsonRecipe("");
+        final String json = new ObjectMapper().writeValueAsString(inputDto);
 
         // When
         final ResultActions actions = this.mvc.perform(
-            MockMvcRequestBuilders.put("/recipes")
+            MockMvcRequestBuilders.put("/recipes/" + id)
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON));
 
@@ -73,7 +74,7 @@ class StoreRecipe extends EndToEndTest {
             .andExpect(jsonPath("$.length()").value(2));
     }
 
-    private DbRecipe toDbRecipe(final OutputRecipeDto recipe) {
+    private DbRecipe toDbRecipe(final UUID id, final InputRecipeDto recipe) {
         final DbIngredient[] dbIngredients = recipe.getIngredients().stream()
             .map(ingredient -> new DbIngredient(
                 ingredient.getName(),
@@ -81,6 +82,6 @@ class StoreRecipe extends EndToEndTest {
                 ingredient.getUnit().orElse(null)
             )).toArray(DbIngredient[]::new);
 
-        return ObjectBuilder.buildDbRecipe(recipe.getId(), recipe.getTitle(), dbIngredients);
+        return ObjectBuilder.buildDbRecipe(id, recipe.getTitle(), dbIngredients);
     }
 }

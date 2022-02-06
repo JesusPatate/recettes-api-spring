@@ -2,12 +2,14 @@ package fr.ggautier.recettes.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.ggautier.arch.annotations.rest.Representation;
+import lombok.EqualsAndHashCode;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Representation
+@EqualsAndHashCode
 public class OutputRecipeDto {
 
     private final UUID id;

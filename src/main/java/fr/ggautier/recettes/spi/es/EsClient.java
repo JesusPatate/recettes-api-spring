@@ -32,7 +32,7 @@ public class EsClient {
                 new HttpHost("localhost", 9200, "http")
             ));
 
-        final IndexRequest request = new IndexRequest("recipes", "recipe", recipe.getId());
+        final IndexRequest request = new IndexRequest("recipes").id(recipe.getId());
         final String json = new ObjectMapper().writeValueAsString(recipe);
         request.source(json, XContentType.JSON);
         client.index(request, RequestOptions.DEFAULT);
