@@ -35,7 +35,7 @@ class SearchRecipes extends EndToEndTest {
         );
         final DbRecipe recipe2 = ObjectBuilder.buildDbRecipe(
             UUID.fromString("c12f9300-94d8-46c0-b903-40871b99305b"),
-            "Bar à vin"
+            "Bar a vin"
         );
         final DbRecipe recipe3 = ObjectBuilder.buildDbRecipe(
             UUID.fromString("c13f9300-94d8-46c0-b903-40871b99305b"),
@@ -54,10 +54,11 @@ class SearchRecipes extends EndToEndTest {
         // Then
         actions.andExpect(MockMvcResultMatchers.status().isOk());
 
+        final String responseBody = response.getContentAsString();
         final String filePath = "/fixtures/search-output.json";
         final String expected = this.readResourceFile(filePath);
 
-        JSONAssert.assertEquals(expected, response.getContentAsString(), false);
+        JSONAssert.assertEquals(expected, responseBody, false);
     }
 
     private void storeInES(final DbRecipe... recipes) throws IOException {
@@ -66,8 +67,8 @@ class SearchRecipes extends EndToEndTest {
                 new HttpHost("localhost", 9200, "http")
             ));
 
-        for (DbRecipe dbModel : recipes) {
-            final IndexRequest request = new IndexRequest("recipes", "recipe", dbModel.getId().toString());
+        for (final DbRecipe dbModel : recipes) {
+            final IndexRequest request = new IndexRequest("recipes").id(dbModel.getId().toString());
             final String json = new ObjectMapper().writeValueAsString(dbModel);
             request.source(json, XContentType.JSON);
             client.index(request, RequestOptions.DEFAULT);
@@ -80,7 +81,7 @@ class SearchRecipes extends EndToEndTest {
         final InputStream input = this.getClass().getResourceAsStream(filePath);
         final String contents;
 
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(input))) {
+        try (final BufferedReader reader = new BufferedReader(new InputStreamReader(input))) {
             contents = reader.lines().collect(Collectors.joining("\n"));
         }
 

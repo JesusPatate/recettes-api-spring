@@ -165,7 +165,7 @@ class RecipeRepositoryTest implements IntegrationTest {
         );
         final DbRecipe recipe2 = ObjectBuilder.buildDbRecipe(
             UUID.fromString("c12f9300-94d8-46c0-b903-40871b99305b"),
-            "Bar à vin"
+            "Bar a vin"
         );
         final DbRecipe recipe3 = ObjectBuilder.buildDbRecipe(
             UUID.fromString("c13f9300-94d8-46c0-b903-40871b99305b"),
@@ -208,8 +208,8 @@ class RecipeRepositoryTest implements IntegrationTest {
                 new HttpHost(this.esHost, this.esPort, "http")
             ));
 
-        for (DbRecipe dbModel : recipes) {
-            final IndexRequest request = new IndexRequest("recipes", "recipe", dbModel.getId().toString());
+        for (final DbRecipe dbModel : recipes) {
+            final IndexRequest request = new IndexRequest("recipes").id(dbModel.getId().toString());
             final String json = new ObjectMapper().writeValueAsString(dbModel);
             request.source(json, XContentType.JSON);
             client.index(request, RequestOptions.DEFAULT);

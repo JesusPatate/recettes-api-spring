@@ -30,7 +30,7 @@ class RecipeControllerTest implements UnitTest {
     private ICanFindRecipes browsingService;
 
     RecipeControllerTest() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
 
         final RecipeMapper mapper = new RecipeMapper();
         this.controller = new RecipeController(
@@ -85,7 +85,7 @@ class RecipeControllerTest implements UnitTest {
         final OutputRecipeDto output = this.controller.get(id);
 
         // Then
-        final OutputRecipeDto expected = ObjectBuilder.buildJsonRecipe(id, title);
+        final OutputRecipeDto expected = ObjectBuilder.buildOutputJsonRecipe(id, title);
         assertThat(output).isEqualTo(expected);
     }
 
@@ -93,19 +93,21 @@ class RecipeControllerTest implements UnitTest {
     void testStore() throws Exception {
         // Given
         final UUID id = UUID.randomUUID();
-        final OutputRecipeDto json = ObjectBuilder.buildJsonRecipe(id, "recipe1");
+        final String title = UUID.randomUUID().toString();
+        final Recipe recipe = ObjectBuilder.buildRecipe(id, title);
+        final InputRecipeDto json = ObjectBuilder.buildInputJsonRecipe(title);
 
         // When
         final OutputRecipeDto output = this.controller.store(json);
 
         // Then
-        assertThat(output).isEqualTo(json);
+        assertThat(output).hasFieldOrPropertyWithValue("title", recipe.getTitle());
     }
 
     @Test
     void testDelete() throws Exception {
         // Given
-        final OutputRecipeDto json = ObjectBuilder.buildJsonRecipe(UUID.randomUUID(), "recipe1");
+        final OutputRecipeDto json = ObjectBuilder.buildOutputJsonRecipe(UUID.randomUUID(), "recipe1");
 
         // When
         this.controller.delete(json.getId());
@@ -131,8 +133,8 @@ class RecipeControllerTest implements UnitTest {
         final List<OutputRecipeDto> output = this.controller.search(term);
 
         // Then
-        final OutputRecipeDto expected1 = ObjectBuilder.buildJsonRecipe(recipe1.getId(), recipe1.getTitle());
-        final OutputRecipeDto expected2 = ObjectBuilder.buildJsonRecipe(recipe2.getId(), recipe2.getTitle());
+        final OutputRecipeDto expected1 = ObjectBuilder.buildOutputJsonRecipe(recipe1.getId(), recipe1.getTitle());
+        final OutputRecipeDto expected2 = ObjectBuilder.buildOutputJsonRecipe(recipe2.getId(), recipe2.getTitle());
         assertThat(output).containsExactly(expected1, expected2);
     }
 
