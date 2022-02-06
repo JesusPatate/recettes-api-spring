@@ -65,11 +65,11 @@ public class RecipeRepository implements IStoreRecipes {
     }
 
     @Override
-    public List<Recipe> search(String term) throws Exception {
+    public List<Recipe> search(final String term) throws Exception {
         final List<EsRecipe> results = this.esClient.searchRecipe(term);
         final List<Recipe> recipes = new ArrayList<>();
 
-        for (EsRecipe result : results) {
+        for (final EsRecipe result : results) {
             final Recipe recipe = this.esRecipeMapper.toRecipe(result);
             recipes.add(recipe);
         }
@@ -92,10 +92,14 @@ public class RecipeRepository implements IStoreRecipes {
 
     @Override
     public void remove(final Recipe recipe) {
-        final DbRecipe dbModel = dbModelMapper.toDbModel(recipe);
+        final DbRecipe dbModel = this.dbModelMapper.toDbModel(recipe);
         this.dao.delete(dbModel);
 
-        // TODO: remove recipe from ES
+        try {
+            this.esClient.delete(recipe.getId());
+        } catch (final Exception exception) {
+            LOG.error("Failed to remove recipe from ES index ({})", recipe, exception);
+        }
     }
 
     /**
@@ -103,7 +107,7 @@ public class RecipeRepository implements IStoreRecipes {
      *
      * @param dbModel Database model of the recipe
      */
-    private Recipe fromDbModel(DbRecipe dbModel) {
+    private Recipe fromDbModel(final DbRecipe dbModel) {
         try {
             return this.dbModelMapper.fromDbModel(dbModel);
         } catch (final UnknownUnitException exception) {
