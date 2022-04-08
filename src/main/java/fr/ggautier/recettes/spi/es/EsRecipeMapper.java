@@ -13,16 +13,16 @@ public class EsRecipeMapper {
 
     public Recipe toRecipe(final EsRecipe esRecipe) {
         final Recipe.Builder builder = new Recipe.Builder()
-            .setId(UUID.fromString(esRecipe.getId()))
-            .setTitle(esRecipe.getTitle())
-            .isHot(esRecipe.getHot())
-            .isADessert(esRecipe.getDessert())
-            .setPreparationTime(esRecipe.getPreparationTime())
-            .setCookingTime(esRecipe.getCookingTime())
-            .setServings(esRecipe.getServings())
-            .setSource(esRecipe.getSource());
+            .setId(UUID.fromString(esRecipe.id()))
+            .setTitle(esRecipe.title())
+            .isHot(esRecipe.hot())
+            .isADessert(esRecipe.dessert())
+            .setPreparationTime(esRecipe.preparationTime())
+            .setCookingTime(esRecipe.cookingTime())
+            .setServings(esRecipe.servings())
+            .setSource(esRecipe.source());
 
-        for (EsIngredient i : esRecipe.getIngredients()) {
+        for (EsIngredient i : esRecipe.ingredients()) {
             final Ingredient ingredient = this.toIngredient(i);
             builder.setIngredient(ingredient);
         }
@@ -50,7 +50,7 @@ public class EsRecipeMapper {
 
     private Ingredient toIngredient(EsIngredient i) {
         try {
-            return new Ingredient(i.getName(), i.getAmount(), i.getUnit());
+                return new Ingredient(i.name(), i.amount(), i.unit());
         } catch (final UnknownUnitException exception) {
             throw new RuntimeException(exception.getMessage(), exception);
         }

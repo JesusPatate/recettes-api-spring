@@ -54,9 +54,9 @@ class RecipeMapper {
     }
 
     private Ingredient toIngredient(final IngredientDto dto) throws UnknownUnitException {
-        final String unit = dto.getUnit().orElse(null);
-        final Integer amount = dto.getAmount().orElse(null);
-        return new Ingredient(dto.getName(), amount, unit);
+        final String unit = dto.unit();
+        final Integer amount = dto.amount();
+        return new Ingredient(dto.name(), amount, unit);
     }
 
     private IngredientDto fromIngredient(final Ingredient ingredient) {

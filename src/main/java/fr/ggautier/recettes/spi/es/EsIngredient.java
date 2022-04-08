@@ -1,16 +1,8 @@
 package fr.ggautier.recettes.spi.es;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
 
-@Data
-class EsIngredient {
-
-    private final String name;
-
-    private final Integer amount;
-
-    private final String unit;
+record EsIngredient(String name, Integer amount, String unit) {
 
     EsIngredient(
         @JsonProperty("name") final String name,

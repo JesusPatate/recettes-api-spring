@@ -1,16 +1,23 @@
 package fr.ggautier.recettes.spi.es;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
-import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
-public class EsRecipe {
+public record EsRecipe(
+    String id,
+    String title,
+    Boolean hot,
+    Boolean dessert,
+    Integer servings,
+    Set<EsIngredient> ingredients,
+    Integer preparationTime,
+    Integer cookingTime,
+    String source
+) {
 
-    @Setter
     public static class Builder {
 
         private String id = null;
@@ -83,25 +90,8 @@ public class EsRecipe {
         }
     }
 
-    private final String id;
-
-    private final String title;
-
-    private final Boolean hot;
-
-    private final Boolean dessert;
-
-    private final Integer servings;
-
-    private final Set<EsIngredient> ingredients;
-
-    private final Integer preparationTime;
-
-    private final Integer cookingTime;
-
-    private final String source;
-
-    EsRecipe(
+    @JsonCreator
+    public EsRecipe(
         @JsonProperty("id") final String id,
         @JsonProperty("title") final String title,
         @JsonProperty("hot") final Boolean hot,
@@ -110,7 +100,7 @@ public class EsRecipe {
         @JsonProperty("ingredients") final Set<EsIngredient> ingredients,
         @JsonProperty("preparationTime") final Integer preparationTime,
         @JsonProperty("cookingTime") final Integer cookingTime,
-        @JsonProperty("sourc") final String source
+        @JsonProperty("source") final String source
     ) {
         this.id = id;
         this.title = title;

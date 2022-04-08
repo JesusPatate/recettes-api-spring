@@ -77,9 +77,9 @@ class StoreRecipe extends EndToEndTest {
     private DbRecipe toDbRecipe(final UUID id, final InputRecipeDto recipe) {
         final DbIngredient[] dbIngredients = recipe.getIngredients().stream()
             .map(ingredient -> new DbIngredient(
-                ingredient.getName(),
-                ingredient.getAmount().orElse(null),
-                ingredient.getUnit().orElse(null)
+                ingredient.name(),
+                ingredient.amount(),
+                ingredient.unit()
             )).toArray(DbIngredient[]::new);
 
         return ObjectBuilder.buildDbRecipe(id, recipe.getTitle(), dbIngredients);

@@ -26,8 +26,7 @@ class RecipeBrowserTest implements UnitTest {
     private IStoreRecipes recipes;
 
     RecipeBrowserTest() {
-        MockitoAnnotations.initMocks(this);
-
+        MockitoAnnotations.openMocks(this);
         this.service = new RecipeBrowser(this.recipes);
     }
 

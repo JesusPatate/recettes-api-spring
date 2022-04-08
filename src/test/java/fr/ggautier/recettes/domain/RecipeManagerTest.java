@@ -20,7 +20,7 @@ class RecipeManagerTest implements UnitTest {
     private IStoreRecipes recipes;
 
     RecipeManagerTest() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         this.service = new RecipeManager(this.recipes);
     }
 
