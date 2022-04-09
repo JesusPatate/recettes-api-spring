@@ -1,57 +1,55 @@
 {
   "mappings": {
-    "recipe": {
-      "properties": {
-        "cookingTime": {
-          "type": "short"
-        },
-        "dessert": {
-          "type": "boolean"
-        },
-        "hot": {
-          "type": "boolean"
-        },
-        "ingredients": {
-          "type": "nested",
-          "properties": {
-            "amount": {
-              "type": "integer",
-              "index": false
-            },
-            "name": {
-              "type": "text",
-              "analyzer": "french",
-              "copy_to": [
-                "title_ingredients"
-              ]
-            },
-            "unit": {
-              "type": "text",
-              "index": false
-            }
+    "properties": {
+      "cookingTime": {
+        "type": "short"
+      },
+      "dessert": {
+        "type": "boolean"
+      },
+      "hot": {
+        "type": "boolean"
+      },
+      "ingredients": {
+        "type": "nested",
+        "properties": {
+          "amount": {
+            "type": "integer",
+            "index": false
+          },
+          "name": {
+            "type": "text",
+            "analyzer": "french",
+            "copy_to": [
+              "title_ingredients"
+            ]
+          },
+          "unit": {
+            "type": "text",
+            "index": false
           }
-        },
-        "preparationTime": {
-          "type": "short"
-        },
-        "servings": {
-          "type": "byte"
-        },
-        "source": {
-          "type": "text",
-          "index": false
-        },
-        "title": {
-          "type": "text",
-          "analyzer": "french",
-          "copy_to": [
-            "title_ingredients"
-          ]
-        },
-        "title_ingredients": {
-          "type": "text",
-          "analyzer": "french"
         }
+      },
+      "preparationTime": {
+        "type": "short"
+      },
+      "servings": {
+        "type": "byte"
+      },
+      "source": {
+        "type": "text",
+        "index": false
+      },
+      "title": {
+        "type": "text",
+        "analyzer": "french",
+        "copy_to": [
+          "title_ingredients"
+        ]
+      },
+      "title_ingredients": {
+        "type": "text",
+        "analyzer": "french"
       }
     }
   }
